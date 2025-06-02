@@ -83,7 +83,7 @@ fun AppNavigation() {
         ) { backStackEntry ->
             val carreraId = backStackEntry.arguments?.getString("carreraId") ?: ""
             val asignaturaId = backStackEntry.arguments?.getString("asignaturaId") ?: ""
-            DetalleAsignaturaScreen(carreraId, asignaturaId)
+            DetalleAsignaturaScreen(carreraId, asignaturaId, navHostController = navController)
         }
         composable("session") { SessionCheckScreen(navController = navController) }
         composable("profile") {

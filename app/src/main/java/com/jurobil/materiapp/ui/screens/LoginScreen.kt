@@ -103,7 +103,6 @@ fun LoginScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(25.dp)
             .background(Color.Yellow),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -118,7 +117,7 @@ fun LoginScreen(
             placeholder = { Text("Ingresa tu usuario") },
             modifier = Modifier
                 .background(Color.White, shape = RoundedCornerShape(topStart = 12.dp, bottomEnd = 8.dp)),
-            shape = RoundedCornerShape(topStart = 12.dp, bottomEnd = 8.dp)
+            shape = RoundedCornerShape(topStart = 12.dp, bottomEnd = 8.dp),
         )
         Spacer(modifier = Modifier.height(16.dp))
         PasswordTextField(

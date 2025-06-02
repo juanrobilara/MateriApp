@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.jurobil.materiapp.domain.model.Asignatura
@@ -33,9 +34,11 @@ import com.jurobil.materiapp.ui.viewmodel.HomeViewModel
 fun DetalleAsignaturaScreen(
     carreraId: String,
     asignaturaId: String,
+    navHostController: NavHostController,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     var asignatura by remember { mutableStateOf<Asignatura?>(null) }
+    var nombre by remember { mutableStateOf("") }
     var nota by remember { mutableStateOf("") }
     var observaciones by remember { mutableStateOf("") }
     var isSaving by remember { mutableStateOf(false) }
@@ -55,6 +58,7 @@ fun DetalleAsignaturaScreen(
                 val asign = doc.toObject(Asignatura::class.java)
                 asign?.let {
                     asignatura = it
+                    nombre = it.nombre // <- esto faltaba
                     nota = it.nota?.toString() ?: ""
                     observaciones = it.observaciones ?: ""
                 }
@@ -72,7 +76,14 @@ fun DetalleAsignaturaScreen(
                 .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Text("Nombre: ${asignatura!!.nombre}", style = MaterialTheme.typography.titleMedium)
+            Text("Nombre original: ${asignatura!!.nombre}", style = MaterialTheme.typography.titleMedium)
+
+            OutlinedTextField(
+                value = nombre,
+                onValueChange = { nombre = it },
+                label = { Text("Nombre de la Asignatura") },
+                modifier = Modifier.fillMaxWidth()
+            )
 
             OutlinedTextField(
                 value = nota,
@@ -104,12 +115,14 @@ fun DetalleAsignaturaScreen(
                         .document(asignaturaId)
                         .update(
                             mapOf(
+                                "nombre" to nombre,
                                 "nota" to notaDouble,
                                 "observaciones" to observaciones
                             )
                         )
                         .addOnSuccessListener {
                             isSaving = false
+                            navHostController.popBackStack() // <- aquí sí, luego de guardar
                         }
                         .addOnFailureListener {
                             isSaving = false

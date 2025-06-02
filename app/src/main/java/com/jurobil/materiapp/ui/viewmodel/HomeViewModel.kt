@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.auth.User
 import com.jurobil.materiapp.domain.model.Asignatura
 import com.jurobil.materiapp.domain.model.Carrera
 import com.jurobil.materiapp.domain.model.CarreraResumen
@@ -41,7 +42,7 @@ class HomeViewModel @Inject constructor(
 
     private fun getCurrentUserGreeting() {
         val currentUser = auth.currentUser
-        _greeting.value = "Hello, ${currentUser?.displayName ?: "User"}!"
+        _greeting.value = currentUser?.displayName.toString()
     }
 
     private fun listenCarrerasYResumenes() {

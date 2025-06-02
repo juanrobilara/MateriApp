@@ -63,8 +63,9 @@ fun HomeScreen(
     val carreras by viewModel.carreras.collectAsState()
     val resumenCarreras by viewModel.resumenCarreras.collectAsState()
 
-    HomeScreenContent(
-        greeting = greeting,
+    MainScaffold(
+        title = "Bienvenido, $greeting",
+        currentRoute = "home",
         onSignOut = {
             viewModel.signOut()
             navController.navigate("login") {
@@ -77,35 +78,38 @@ fun HomeScreen(
                 launchSingleTop = true
             }
         },
-        currentRoute = navController.currentDestination?.route ?: "home",
-        carreras = carreras,
-        resumenes = resumenCarreras,
-        onDeleteCarrera = { id -> viewModel.deleteCarrera(id) },
-        onEditCarrera = { id -> navController.navigate("editar_carrera/$id") }
-    )
+        showFab = true
+    ) { innerPadding ->
+        HomeScreenContent(
+            greeting = greeting,
+            carreras = carreras,
+            resumenes = resumenCarreras,
+            onDeleteCarrera = { id -> viewModel.deleteCarrera(id) },
+            onEditCarrera = { id -> navController.navigate("editar_carrera/$id") },
+            onNavigate = { route ->
+                navController.navigate(route) {
+                    popUpTo("home") { inclusive = false }
+                    launchSingleTop = true
+                }
+            },
+            modifier = Modifier.padding(innerPadding)
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreenContent(
     greeting: String,
-    onSignOut: () -> Unit,
-    onNavigate: (String) -> Unit,
-    currentRoute: String,
     carreras: List<Carrera>,
     resumenes: Map<String, CarreraResumen>,
     onDeleteCarrera: (String) -> Unit,
-    onEditCarrera: (String) -> Unit
+    onEditCarrera: (String) -> Unit,
+    onNavigate: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     var showDialog by remember { mutableStateOf(false) }
     var selectedCarreraId by remember { mutableStateOf<String?>(null) }
-
-
-
-    val items = listOf(
-        BottomNavItem("home", Icons.Default.Home, "Home"),
-        BottomNavItem("profile", Icons.Default.Person, "Profile")
-    )
 
     if (showDialog && selectedCarreraId != null) {
         AlertDialog(
@@ -144,81 +148,47 @@ fun HomeScreenContent(
         )
     }
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text("Bienvenido") },
-                actions = {
-                    IconButton(onClick = onSignOut) {
-                        Icon(Icons.Default.ExitToApp, contentDescription = "Sign Out")
-                    }
-                }
-            )
-        },
-        bottomBar = {
-            NavigationBar {
-                items.forEach { item ->
-                    NavigationBarItem(
-                        selected = currentRoute == item.route,
-                        onClick = { onNavigate(item.route) },
-                        icon = { Icon(item.icon, contentDescription = item.label) },
-                        label = { Text(item.label) }
-                    )
-                }
-            }
-        },
-        floatingActionButton = {
-            FloatingActionButton(onClick = { onNavigate("agregar_carrera") }) {
-                Icon(Icons.Default.Add, contentDescription = "Agregar carrera")
-            }
-        }
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .padding(16.dp)
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+    Column(
+        modifier = modifier
+            .padding(16.dp)
+            .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Spacer(modifier = Modifier.height(16.dp))
+
+        LazyColumn(
+            modifier = Modifier.fillMaxSize()
         ) {
-            Text(greeting, style = MaterialTheme.typography.bodyLarge)
-            Spacer(modifier = Modifier.height(16.dp))
+            items(carreras) { carrera ->
+                val resumen = resumenes[carrera.id]
+                val porcentaje = resumen?.porcentaje ?: 0
+                val fondoColor = colorPorPorcentaje(porcentaje)
 
-            LazyColumn(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                items(carreras) { carrera ->
-                    val resumen = resumenes[carrera.id]
-                    val porcentaje = resumen?.porcentaje ?: 0
-                    val fondoColor = colorPorPorcentaje(porcentaje)
-
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp)
-                            .combinedClickable(
-                                onClick = {
-                                    onNavigate("detalle_carrera/${carrera.id}")
-                                },
-                                onLongClick = {
-                                    selectedCarreraId = carrera.id
-                                    showDialog = true
-                                }
-                            ),
-                        colors = CardDefaults.cardColors(
-                            containerColor = fondoColor
-                        ),
-                        shape = RoundedCornerShape(12.dp),
-                        elevation = CardDefaults.cardElevation(4.dp)
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text(carrera.nombre, style = MaterialTheme.typography.titleLarge, color = Color.Black)
-                            Text(carrera.descripcion, style = MaterialTheme.typography.bodySmall, color = Color.Black)
-                            resumen?.let {
-                                Spacer(Modifier.height(4.dp))
-                                Text("Completado: ${it.porcentaje}%", color = Color.Black)
-                                Text("Promedio: ${"%.2f".format(it.promedio)}", color = Color.Black)
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                        .combinedClickable(
+                            onClick = {
+                                onNavigate("detalle_carrera/${carrera.id}")
+                            },
+                            onLongClick = {
+                                selectedCarreraId = carrera.id
+                                showDialog = true
                             }
+                        ),
+                    colors = CardDefaults.cardColors(containerColor = fondoColor),
+                    shape = RoundedCornerShape(12.dp),
+                    elevation = CardDefaults.cardElevation(4.dp)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(carrera.nombre, style = MaterialTheme.typography.titleLarge, color = Color.Black)
+                        Text(carrera.descripcion, style = MaterialTheme.typography.bodySmall, color = Color.Black)
+                        resumen?.let {
+                            Spacer(Modifier.height(4.dp))
+                            Text("Completado: ${it.porcentaje}%", color = Color.Black)
+                            Text("Promedio: ${"%.2f".format(it.promedio)}", color = Color.Black)
                         }
                     }
                 }
@@ -238,8 +208,8 @@ fun MainScaffold(
     content: @Composable (PaddingValues) -> Unit
 ) {
     val items = listOf(
-        BottomNavItem("home", Icons.Default.Home, "Home"),
-        BottomNavItem("profile", Icons.Default.Person, "Profile")
+        BottomNavItem("home", Icons.Default.Home, "Inicio"),
+        BottomNavItem("profile", Icons.Default.Person, "Perfil")
     )
 
     Scaffold(
@@ -298,9 +268,7 @@ fun HomeScreenContentPreview() {
     MaterialTheme {
         HomeScreenContent(
             greeting = "¡Hola, usuario!",
-            onSignOut = {},
             onNavigate = {},
-            currentRoute = "home",
             carreras = emptyList(),
             onDeleteCarrera = {},
             onEditCarrera = {},
