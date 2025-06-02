@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "627232973023",
+    "project_id": "materiapp-e9c91",
+    "storage_bucket": "materiapp-e9c91.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:627232973023:android:3a9ac89457c50c992ec96a",
+        "android_client_info": {
+          "package_name": "com.jurobil.materiapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "627232973023-3u7fq9mdtdjgmouqjlmgulh3ftdrs712.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jurobil.materiapp",
+            "certificate_hash": "dcc9c386a3a823d73c2ac95a98e68edb7a728646"
+          }
+        },
+        {
+          "client_id": "627232973023-bp8944jsnjde4t2mnqae99tlkm0ch4ml.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDS8vuzySwB6013dfwUuBNNJiLYv2IhkTk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "627232973023-bp8944jsnjde4t2mnqae99tlkm0ch4ml.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
