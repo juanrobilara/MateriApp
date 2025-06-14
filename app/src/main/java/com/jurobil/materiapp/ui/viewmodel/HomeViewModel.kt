@@ -6,9 +6,14 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.auth.User
+import com.jurobil.materiapp.data.local.AsignaturaDao
+import com.jurobil.materiapp.data.local.AsignaturaEntity
+import com.jurobil.materiapp.data.local.CarreraDao
+import com.jurobil.materiapp.data.local.CarreraEntity
 import com.jurobil.materiapp.domain.model.Asignatura
 import com.jurobil.materiapp.domain.model.Carrera
 import com.jurobil.materiapp.domain.model.CarreraResumen
+import com.jurobil.materiapp.domain.repository.RepositorioCarreras
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,14 +25,17 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val auth: FirebaseAuth,
-    private val firestore: FirebaseFirestore
+    private val firestore: FirebaseFirestore,
+    private val carreraDao: CarreraDao,
+    private val asignaturaDao: AsignaturaDao,
+    private val repositorio: RepositorioCarreras
 ) : ViewModel() {
 
     private val _greeting = MutableStateFlow("")
     val greeting: StateFlow<String> = _greeting.asStateFlow()
 
     private val _carreras = MutableStateFlow<List<Carrera>>(emptyList())
-    val carreras: StateFlow<List<Carrera>> = _carreras.asStateFlow()
+    val carreras: StateFlow<List<Carrera>> = _carreras
 
     private val _asignaturas = MutableStateFlow<List<Asignatura>>(emptyList())
     val asignaturas: StateFlow<List<Asignatura>> = _asignaturas
@@ -37,7 +45,10 @@ class HomeViewModel @Inject constructor(
 
     init {
         getCurrentUserGreeting()
-        listenCarrerasYResumenes()
+        sincronizarFirestoreConRoom()
+        sincronizarAsignaturasFirestoreConRoom()
+        observarCarrerasLocales()
+        observarAsignaturasYActualizarResumen()
     }
 
     private fun getCurrentUserGreeting() {
@@ -45,36 +56,60 @@ class HomeViewModel @Inject constructor(
         _greeting.value = currentUser?.displayName.toString()
     }
 
-    private fun listenCarrerasYResumenes() {
+    private fun sincronizarYObservar() {
+        viewModelScope.launch {
+            try {
+                repositorio.sincronizarCarreras()
+                val locales = repositorio.getCarrerasLocal()
+                _carreras.value = locales
+            } catch (e: Exception) {
+                // Si falla Firestore, aún puedes mostrar datos locales
+                _carreras.value = repositorio.getCarrerasLocal()
+            }
+        }
+    }
+
+
+
+    private fun sincronizarFirestoreConRoom() {
         val uid = auth.currentUser?.uid ?: return
 
         firestore.collection("users").document(uid).collection("carreras")
             .addSnapshotListener { snapshot, _ ->
                 if (snapshot == null) return@addSnapshotListener
-                val carreras = snapshot.documents.mapNotNull { it.toObject(Carrera::class.java)?.copy(id = it.id) }
-                _carreras.value = carreras
 
-                val resumenMap = mutableMapOf<String, CarreraResumen>()
-                carreras.forEach { carrera ->
-                    firestore.collection("users")
-                        .document(uid)
-                        .collection("carreras")
-                        .document(carrera.id)
-                        .collection("asignaturas")
-                        .addSnapshotListener { asignaturasSnapshot, _ ->
-                            val asignaturas = asignaturasSnapshot?.toObjects(Asignatura::class.java) ?: emptyList()
-                            val total = asignaturas.size
-                            val completadas = asignaturas.count { it.completada }
-                            val porcentaje = if (total > 0) (completadas * 100 / total) else 0
-                            val promedio = asignaturas.filter { it.completada }.map { it.nota }.average()
-                                .takeIf { it.isFinite() } ?: 0.0
-
-                            resumenMap[carrera.id] = CarreraResumen(porcentaje, promedio)
-                            _resumenCarreras.value = resumenMap.toMap()
+                viewModelScope.launch {
+                    val carreras = snapshot.documents.mapNotNull { doc ->
+                        val carrera = doc.toObject(Carrera::class.java)?.copy(id = doc.id)
+                        carrera?.let {
+                            CarreraEntity(
+                                id = it.id,
+                                nombre = it.nombre,
+                                descripcion = it.descripcion,
+                                cantidadAsignaturas = it.cantidadAsignaturas
+                            )
                         }
+                    }
+                    carreraDao.insertAll(carreras)
                 }
             }
     }
+
+    private fun observarCarrerasLocales() {
+        viewModelScope.launch {
+            carreraDao.getAllFlow().collect { entidades ->
+                _carreras.value = entidades.map {
+                    Carrera(
+                        id = it.id,
+                        nombre = it.nombre,
+                        descripcion = it.descripcion,
+                        cantidadAsignaturas = it.cantidadAsignaturas
+                    )
+                }
+            }
+        }
+    }
+
 
     fun updateCarrera(carreraId: String, nombre: String, descripcion: String) {
         val uid = auth.currentUser?.uid ?: return
@@ -109,7 +144,7 @@ class HomeViewModel @Inject constructor(
         val carreraRef = firestore.collection("users")
             .document(uid)
             .collection("carreras")
-            .document() // genera ID manual
+            .document()
 
         val carrera = Carrera(
             id = carreraRef.id,
@@ -118,40 +153,102 @@ class HomeViewModel @Inject constructor(
             cantidadAsignaturas = cantidadAsignaturas
         )
 
-        carreraRef.set(carrera)
+        carreraRef.set(carrera).addOnSuccessListener {
+            repeat(cantidadAsignaturas) { index ->
+                val asignatura = Asignatura(
+                    nombre = "Asignatura ${index + 1}",
+                    numero = index + 1
+                )
+                carreraRef.collection("asignaturas")
+                    .document(asignatura.id)
+                    .set(asignatura)
+            }
+
+            // Re-sincroniza después de agregar
+            sincronizarYObservar()
+        }
+    }
+
+
+
+
+    fun deleteCarrera(id: String) {
+        val uid = auth.currentUser?.uid ?: return
+
+        // 1. Eliminar de Firestore
+        firestore.collection("users").document(uid)
+            .collection("carreras").document(id).delete()
             .addOnSuccessListener {
-                repeat(cantidadAsignaturas) { index ->
-                    val asignatura = Asignatura(
-                        nombre = "Asignatura ${index + 1}",
-                        numero = index + 1 // importante
-                    )
-                    carreraRef.collection("asignaturas")
-                        .document(asignatura.id)
-                        .set(asignatura)
+                viewModelScope.launch {
+                    // 2. Eliminar localmente en Room
+                    carreraDao.deleteById(id)
+                    asignaturaDao.clearByCarreraId(id)
+
+                    // 3. Re-sincronizar o volver a cargar si lo necesitas
+                    sincronizarYObservar()
                 }
             }
     }
 
 
-    fun deleteCarrera(id: String) {
+    private fun sincronizarAsignaturasFirestoreConRoom() {
         val uid = auth.currentUser?.uid ?: return
-        firestore.collection("users").document(uid).collection("carreras").document(id).delete()
+
+        firestore.collection("users").document(uid).collection("carreras")
+            .get()
+            .addOnSuccessListener { snapshot ->
+                snapshot.documents.forEach { doc ->
+                    val carreraId = doc.id
+                    firestore.collection("users").document(uid)
+                        .collection("carreras").document(carreraId)
+                        .collection("asignaturas")
+                        .get()
+                        .addOnSuccessListener { asignaturasSnapshot ->
+                            viewModelScope.launch {
+                                val asignaturas = asignaturasSnapshot.documents.mapNotNull { asignaturaDoc ->
+                                    asignaturaDoc.toObject(Asignatura::class.java)?.copy(id = asignaturaDoc.id)
+                                }
+
+                                val entidades = asignaturas.map {
+                                    AsignaturaEntity(
+                                        id = it.id,
+                                        carreraId = carreraId,
+                                        nombre = it.nombre,
+                                        numero = it.numero,
+                                        nota = it.nota,
+                                        completada = it.completada
+                                    )
+                                }
+
+                                asignaturaDao.insertAll(entidades)
+                            }
+                        }
+                }
+            }
+    }
+
+    private fun observarAsignaturasYActualizarResumen() {
+        viewModelScope.launch {
+            asignaturaDao.getAllFlow().collect { entidades ->
+                val resumenMap = entidades.groupBy { it.carreraId }.mapValues { (_, asignaturas) ->
+                    val total = asignaturas.size
+                    val completadas = asignaturas.count { it.completada }
+                    val porcentaje = if (total > 0) (completadas * 100 / total) else 0
+                    val promedio = asignaturas.filter { it.completada }.map { it.nota }.average()
+                        .takeIf { it.isFinite() } ?: 0.0
+
+                    CarreraResumen(porcentaje, promedio)
+                }
+                _resumenCarreras.value = resumenMap
+            }
+        }
     }
 
 
     fun getAsignaturas(carreraId: String) {
-        val uid = auth.currentUser?.uid ?: return
-        firestore.collection("users")
-            .document(uid)
-            .collection("carreras")
-            .document(carreraId)
-            .collection("asignaturas")
-            .orderBy("numero") // <-- agrega esto
-            .addSnapshotListener { snapshot, _ ->
-                _asignaturas.value = snapshot?.documents?.mapNotNull {
-                    it.toObject(Asignatura::class.java)?.copy(id = it.id)
-                } ?: emptyList()
-            }
+        viewModelScope.launch {
+            _asignaturas.value = repositorio.getAsignaturasLocal(carreraId)
+        }
     }
 
     fun updateAsignaturaCompletion(carreraId: String, asignaturaId: String, completada: Boolean) {

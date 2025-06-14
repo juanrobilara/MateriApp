@@ -54,7 +54,8 @@ object GoogleAuthModule {
     }
 }
 
-
+@Module
+@InstallIn(SingletonComponent::class)
 object DatabaseModule {
 
     @Provides

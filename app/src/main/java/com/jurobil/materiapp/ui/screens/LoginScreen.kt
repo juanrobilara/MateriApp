@@ -6,10 +6,12 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,6 +20,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicSecureTextField
 import androidx.compose.foundation.text.input.TextObfuscationMode
@@ -28,7 +32,10 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -65,6 +72,10 @@ import com.google.android.gms.auth.api.identity.Identity
 import com.google.firebase.auth.FirebaseAuth
 import com.jurobil.materiapp.R
 import com.jurobil.materiapp.data.network.GoogleAuthUiClient
+import com.jurobil.materiapp.ui.theme.BackgroundColor
+import com.jurobil.materiapp.ui.theme.CardColor
+import com.jurobil.materiapp.ui.theme.MateriAppTheme
+import com.jurobil.materiapp.ui.theme.PrimaryColor
 import com.jurobil.materiapp.ui.viewmodel.LoginViewModel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.collectLatest
@@ -100,73 +111,94 @@ fun LoginScreen(
         }
     )
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Yellow),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
+            .background(BackgroundColor),
+        contentAlignment = Alignment.Center
     ) {
-
-        Image(painter = painterResource(id = R.drawable.logo), contentDescription = "")
-        Spacer(modifier = Modifier.height(32.dp))
-
-        OutlinedTextField(
-            value = viewModel.email.value,
-            onValueChange = viewModel::onEmailChanged,
-            placeholder = { Text("Ingresa tu usuario") },
+        Card(
             modifier = Modifier
-                .background(Color.White, shape = RoundedCornerShape(topStart = 12.dp, bottomEnd = 8.dp)),
-            shape = RoundedCornerShape(topStart = 12.dp, bottomEnd = 8.dp),
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        PasswordTextField(
-            text = viewModel.password.value,
-            onTextChange = viewModel::onPasswordChanged
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(onClick = { viewModel.login() },
-            modifier = Modifier
-            .width(250.dp)
-            .height(40.dp)) {
-            Text("Login")
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(onClick = { navController.navigate("register") },
-            modifier = Modifier
-                .width(250.dp)
-                .height(40.dp)) {
-            Text("Register")
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(onClick = {
-            coroutineScope.launch {
-                val intentSender = googleAuthUiClient.signIn()
-                intentSender?.let {
-                    launcher.launch(IntentSenderRequest.Builder(it).build())
-                }
-            } }, modifier = Modifier
-            .width(250.dp)
-            .height(40.dp),
-
+                .padding(24.dp)
+                .fillMaxWidth()
+                .wrapContentHeight(),
+            shape = RoundedCornerShape(20.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+            colors = CardDefaults.cardColors(containerColor = CardColor)
         ) {
-            Icon(
-                imageVector = Icons.Filled.Person,
-                contentDescription = "sign with google",
-                modifier = Modifier.size(ButtonDefaults.IconSize)
-            )
+            Column(
+                modifier = Modifier
+                    .padding(24.dp)
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.icon),
+                    contentDescription = null,
+                    modifier = Modifier.size(80.dp)
+                )
 
-            Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+                Spacer(modifier = Modifier.height(24.dp))
 
-            Text("Ingresa con Google")
+                OutlinedTextField(
+                    value = viewModel.email.value,
+                    onValueChange = viewModel::onEmailChanged,
+                    placeholder = { Text("Correo electrónico") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                PasswordTextField(
+                    text = viewModel.password.value,
+                    onTextChange = viewModel::onPasswordChanged
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Button(
+                    onClick = { viewModel.login() },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor)
+                ) {
+                    Text("Iniciar sesión", color = Color.White)
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                TextButton(onClick = { navController.navigate("register") }) {
+                    Text("¿No tienes cuenta? Regístrate")
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Divider()
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Button(
+                    onClick = {
+                        coroutineScope.launch {
+                            val intentSender = googleAuthUiClient.signIn()
+                            intentSender?.let {
+                                launcher.launch(IntentSenderRequest.Builder(it).build())
+                            }
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+                    border = BorderStroke(1.dp, Color.Gray)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Person,
+                        contentDescription = "Google sign-in",
+                        tint = Color.Gray
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text("Continuar con Google", color = Color.Gray)
+                }
+            }
         }
-
     }
 
     LaunchedEffect(Unit) {
@@ -177,12 +209,12 @@ fun LoginScreen(
                         popUpTo("login") { inclusive = true }
                     }
                 }
+
                 is LoginViewModel.LoginResult.Error -> {
                     Toast.makeText(context, result.errorMessage, Toast.LENGTH_LONG).show()
                 }
-                LoginViewModel.LoginResult.Loading -> {
 
-                }
+                LoginViewModel.LoginResult.Loading -> { /* Mostrar loading si deseas */ }
             }
         }
     }
@@ -207,8 +239,8 @@ fun PasswordTextField(
         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
         trailingIcon = {
             val image = if (passwordVisible)
-                Icons.Default.Check
-            else Icons.Default.Clear
+                Icons.Default.Clear
+            else Icons.Default.Check
 
             IconButton(onClick = { passwordVisible = !passwordVisible }) {
                 Icon(imageVector = image, contentDescription = if (passwordVisible) "Ocultar contraseña" else "Mostrar contraseña")
@@ -219,58 +251,82 @@ fun PasswordTextField(
 }
 
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(25.dp)
-            .background(Color.Yellow),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        var textValue by remember { mutableStateOf("Username") }
-        var password by remember { mutableStateOf("") }
-
-        Image(painter = painterResource(id = R.drawable.logo), contentDescription = "")
-        Spacer(modifier = Modifier.height(32.dp))
-
-        OutlinedTextField(
-            value = textValue,
-            onValueChange = {
-                textValue = it
-            },
-            Modifier.background(Color.White, shape = RoundedCornerShape(topStart = 12.dp, bottomEnd = 8.dp)),
-            shape = RoundedCornerShape(topStart = 12.dp, bottomEnd = 8.dp)
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        PasswordTextField (
-            "password",
-            onTextChange = { password = it }
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(onClick = {},
+    MateriAppTheme {
+        Column(
             modifier = Modifier
-                .width(250.dp)
-                .height(40.dp)
+                .fillMaxSize()
+                .padding(25.dp)
+                .background(BackgroundColor), // Usa tu color de fondo elegante
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
         ) {
-            Text("Login")
-        }
+            var textValue by remember { mutableStateOf("usuario@email.com") }
+            var password by remember { mutableStateOf("123456") }
 
-        Spacer(modifier = Modifier.height(16.dp))
+            // Imagen de prueba
+            Box(
+                modifier = Modifier
+                    .size(100.dp)
+                    .background(Color.Gray, shape = CircleShape)
+            )
 
-        Button(onClick = {},
-            modifier = Modifier
-                .width(250.dp)
-                .height(40.dp)
+            Spacer(modifier = Modifier.height(32.dp))
 
-        ) {
-            Text("Sign in with Google")
+            OutlinedTextField(
+                value = textValue,
+                onValueChange = { textValue = it },
+                placeholder = { Text("Ingresa tu usuario") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(CardColor, shape = RoundedCornerShape(topStart = 12.dp, bottomEnd = 8.dp)),
+                shape = RoundedCornerShape(topStart = 12.dp, bottomEnd = 8.dp)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+
+            OutlinedTextField(
+                value = password,
+                onValueChange = { password = it },
+                placeholder = { Text("Ingresa tu contraseña") },
+                visualTransformation = PasswordVisualTransformation(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(CardColor, shape = RoundedCornerShape(topStart = 12.dp, bottomEnd = 8.dp)),
+                shape = RoundedCornerShape(topStart = 12.dp, bottomEnd = 8.dp)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = {},
+                modifier = Modifier
+                    .width(250.dp)
+                    .height(40.dp)
+            ) {
+                Text("Login")
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = {},
+                modifier = Modifier
+                    .width(250.dp)
+                    .height(40.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Person,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(Modifier.width(8.dp))
+                Text("Sign in with Google")
+            }
         }
     }
 }
