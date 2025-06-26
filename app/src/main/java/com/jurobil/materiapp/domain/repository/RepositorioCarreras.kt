@@ -2,10 +2,10 @@ package com.jurobil.materiapp.domain.repository
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.jurobil.materiapp.data.local.AsignaturaDao
-import com.jurobil.materiapp.data.local.AsignaturaEntity
-import com.jurobil.materiapp.data.local.CarreraDao
-import com.jurobil.materiapp.data.local.CarreraEntity
+import com.jurobil.materiapp.data.database.dao.AsignaturaDao
+import com.jurobil.materiapp.data.database.entities.AsignaturaEntity
+import com.jurobil.materiapp.data.database.dao.CarreraDao
+import com.jurobil.materiapp.data.database.entities.CarreraEntity
 import com.jurobil.materiapp.domain.model.Asignatura
 import com.jurobil.materiapp.domain.model.Carrera
 import kotlinx.coroutines.flow.first

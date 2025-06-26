@@ -6,9 +6,9 @@ import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.jurobil.materiapp.data.local.AppDatabase
-import com.jurobil.materiapp.data.local.AsignaturaDao
-import com.jurobil.materiapp.data.local.CarreraDao
+import com.jurobil.materiapp.data.database.AppDatabase
+import com.jurobil.materiapp.data.database.dao.AsignaturaDao
+import com.jurobil.materiapp.data.database.dao.CarreraDao
 import com.jurobil.materiapp.data.network.GoogleAuthUiClient
 import dagger.Module
 import dagger.Provides
