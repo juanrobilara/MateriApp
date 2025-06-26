@@ -11,7 +11,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -32,75 +35,7 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.jurobil.materiapp.ui.viewmodel.HomeViewModel
 
-@Composable
-fun ProfileScreen(
-    viewModel: HomeViewModel = hiltViewModel(),
-    currentRoute: String = "profile",
-    onNavigate: (String) -> Unit,
-    onSignOut: () -> Unit
-) {
-    var name by remember { mutableStateOf("") }
-    var photoUrl by remember { mutableStateOf<String?>(null) }
-    var showSuccess by remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
-        viewModel.getUserProfile { displayName, photo ->
-            name = displayName ?: ""
-            photoUrl = photo
-        }
-    }
-
-    MainScaffold(
-        title = "Perfil",
-        currentRoute = currentRoute,
-        onSignOut = onSignOut,
-        onNavigate = onNavigate,
-        showFab = false // Ocultar FAB en la pantalla de perfil
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .padding(16.dp)
-        ) {
-            photoUrl?.let {
-                AsyncImage(
-                    model = it,
-                    contentDescription = "Foto de perfil",
-                    modifier = Modifier
-                        .size(100.dp)
-                        .clip(CircleShape)
-                        .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
-                        .align(Alignment.CenterHorizontally)
-                )
-            }
-
-            Spacer(Modifier.height(16.dp))
-            OutlinedTextField(
-                value = name,
-                onValueChange = { name = it },
-                label = { Text("Nombre de perfil") },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(Modifier.height(16.dp))
-            Button(
-                onClick = {
-                    viewModel.updateUserName(name) { success ->
-                        showSuccess = success
-                    }
-                },
-                modifier = Modifier.align(Alignment.End)
-            ) {
-                Text("Guardar cambios")
-            }
-
-            if (showSuccess) {
-                Spacer(Modifier.height(8.dp))
-                Text("Nombre actualizado", color = Color.Green)
-            }
-        }
-    }
-}
 
 
 @Composable
@@ -148,22 +83,32 @@ fun ProfileScreenContent(
     Column(
         modifier = Modifier
             .padding(padding)
-            .padding(16.dp)
-            .fillMaxSize()
+            .padding(24.dp)
+            .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Spacer(Modifier.height(16.dp))
+
         photoUrl?.let {
             AsyncImage(
                 model = it,
                 contentDescription = "Foto de perfil",
                 modifier = Modifier
-                    .size(100.dp)
+                    .size(120.dp)
                     .clip(CircleShape)
-                    .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
-                    .align(Alignment.CenterHorizontally)
+                    .border(3.dp, MaterialTheme.colorScheme.primary, CircleShape)
             )
-        }
+        } ?: Icon(
+            imageVector = Icons.Default.Person,
+            contentDescription = "Icono de perfil",
+            modifier = Modifier
+                .size(100.dp)
+                .clip(CircleShape)
+                .border(3.dp, MaterialTheme.colorScheme.primary, CircleShape)
+        )
 
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(24.dp))
+
         OutlinedTextField(
             value = name,
             onValueChange = { name = it },
@@ -171,21 +116,26 @@ fun ProfileScreenContent(
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(24.dp))
+
         Button(
             onClick = {
                 viewModel.updateUserName(name) { success ->
                     showSuccess = success
                 }
             },
-            modifier = Modifier.align(Alignment.End)
+            modifier = Modifier.fillMaxWidth()
         ) {
             Text("Guardar cambios")
         }
 
         if (showSuccess) {
-            Spacer(Modifier.height(8.dp))
-            Text("Nombre actualizado", color = Color.Green)
+            Spacer(Modifier.height(12.dp))
+            Text(
+                "Nombre actualizado correctamente",
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.bodyMedium
+            )
         }
     }
 }

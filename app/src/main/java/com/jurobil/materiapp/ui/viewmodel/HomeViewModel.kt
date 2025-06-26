@@ -184,7 +184,7 @@ class HomeViewModel @Inject constructor(
                     carreraDao.deleteById(id)
                     asignaturaDao.clearByCarreraId(id)
 
-                    // 3. Re-sincronizar o volver a cargar si lo necesitas
+                    // 3. Re-sincronizar o volver a cargar
                     sincronizarYObservar()
                 }
             }
@@ -216,7 +216,7 @@ class HomeViewModel @Inject constructor(
                                         nombre = it.nombre,
                                         numero = it.numero,
                                         nota = it.nota,
-                                        completada = it.completada
+                                        completada = it.completada,
                                     )
                                 }
 
