@@ -7,19 +7,28 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Assignment
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Assignment
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.School
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -180,7 +189,7 @@ fun HomeScreenContent(
                         ),
                     colors = CardDefaults.cardColors(containerColor = fondoColor),
                     shape = RoundedCornerShape(12.dp),
-                    elevation = CardDefaults.cardElevation(4.dp)
+                    elevation = CardDefaults.cardElevation(8.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(carrera.nombre, style = MaterialTheme.typography.titleLarge, color = Color.Black)
@@ -209,14 +218,24 @@ fun MainScaffold(
 ) {
     val items = listOf(
         BottomNavItem("home", Icons.Default.Home, "Inicio"),
-        BottomNavItem("profile", Icons.Default.Person, "Perfil")
+        BottomNavItem("materias_curso", Icons.Default.School, "En curso"),
+        BottomNavItem("tramites", Icons.AutoMirrored.Filled.Assignment, "Trámites"),
+        BottomNavItem("configuracion", Icons.Default.Settings, "Configuración")
     )
 
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text(title) },
+                title = {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(title)
+                        Spacer(Modifier.width(8.dp))
+                    }
+                },
                 actions = {
+                    IconButton(onClick = { onNavigate("profile") }) {
+                        Icon(Icons.Default.Person, contentDescription = "Perfil")
+                    }
                     IconButton(onClick = onSignOut) {
                         Icon(Icons.Default.ExitToApp, contentDescription = "Cerrar sesión")
                     }

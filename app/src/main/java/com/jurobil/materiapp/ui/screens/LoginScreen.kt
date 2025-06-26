@@ -29,7 +29,11 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -42,9 +46,11 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -144,6 +150,9 @@ fun LoginScreen(
                     value = viewModel.email.value,
                     onValueChange = viewModel::onEmailChanged,
                     placeholder = { Text("Correo electrónico") },
+                    leadingIcon = {
+                        Icon(imageVector = Icons.Default.Email, contentDescription = "Email")
+                    },
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -151,7 +160,8 @@ fun LoginScreen(
 
                 PasswordTextField(
                     text = viewModel.password.value,
-                    onTextChange = viewModel::onPasswordChanged
+                    onTextChange = viewModel::onPasswordChanged,
+                    modifier = Modifier.fillMaxWidth()
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -209,47 +219,41 @@ fun LoginScreen(
                         popUpTo("login") { inclusive = true }
                     }
                 }
-
                 is LoginViewModel.LoginResult.Error -> {
                     Toast.makeText(context, result.errorMessage, Toast.LENGTH_LONG).show()
                 }
-
                 LoginViewModel.LoginResult.Loading -> { /* Mostrar loading si deseas */ }
             }
         }
     }
 }
 
-
-
 @Composable
 fun PasswordTextField(
     text: String,
-    onTextChange: (String) -> Unit
+    onTextChange: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
 
     OutlinedTextField(
         value = text,
         onValueChange = onTextChange,
-        placeholder = { Text("Ingresa tu contraseña") },
-        modifier = Modifier
-            .background(Color.White, shape = RoundedCornerShape(topStart = 12.dp, bottomEnd = 8.dp)),
-        shape = RoundedCornerShape(topStart = 12.dp, bottomEnd = 8.dp),
-        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+        placeholder = { Text("Contraseña") },
+        leadingIcon = {
+            Icon(imageVector = Icons.Default.Lock, contentDescription = "Contraseña")
+        },
         trailingIcon = {
-            val image = if (passwordVisible)
-                Icons.Default.Clear
-            else Icons.Default.Check
-
+            val image = if (passwordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility
             IconButton(onClick = { passwordVisible = !passwordVisible }) {
                 Icon(imageVector = image, contentDescription = if (passwordVisible) "Ocultar contraseña" else "Mostrar contraseña")
             }
         },
-        singleLine = true
+        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+        singleLine = true,
+        modifier = modifier
     )
 }
-
 
 @Preview(showBackground = true)
 @Composable
