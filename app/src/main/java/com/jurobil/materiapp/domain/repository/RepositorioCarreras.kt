@@ -72,7 +72,7 @@ class RepositorioCarreras @Inject constructor(
                 nombre = it.nombre,
                 nota = it.nota,
                 completada = it.completada,
-                numero = it.numero
+                numero = it.numero,
             )
         }
     }

@@ -26,14 +26,17 @@ import androidx.navigation.navArgument
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.jurobil.materiapp.ui.screens.AgregarCarreraScreen
+import com.jurobil.materiapp.ui.screens.ConfiguracionScreen
 import com.jurobil.materiapp.ui.screens.DetalleAsignaturaScreen
 import com.jurobil.materiapp.ui.screens.DetalleCarreraScreen
 import com.jurobil.materiapp.ui.screens.EditarCarreraScreen
 import com.jurobil.materiapp.ui.screens.HomeScreen
 import com.jurobil.materiapp.ui.screens.LoginScreen
-import com.jurobil.materiapp.ui.screens.ProfileScreen
+import com.jurobil.materiapp.ui.screens.MateriasEnCursoScreen
+
 import com.jurobil.materiapp.ui.screens.ProfileScreenWrapper
 import com.jurobil.materiapp.ui.screens.RegisterScreen
+import com.jurobil.materiapp.ui.screens.TramitesScreen
 import com.jurobil.materiapp.ui.theme.MateriAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -88,6 +91,15 @@ fun AppNavigation() {
         composable("session") { SessionCheckScreen(navController = navController) }
         composable("profile") {
             ProfileScreenWrapper(navController)
+        }
+        composable("materias_curso") {
+            MateriasEnCursoScreen(navController = navController)
+        }
+        composable("tramites") {
+            TramitesScreen(navController = navController)
+        }
+        composable("configuracion") {
+            ConfiguracionScreen(navController = navController)
         }
         }
     }
