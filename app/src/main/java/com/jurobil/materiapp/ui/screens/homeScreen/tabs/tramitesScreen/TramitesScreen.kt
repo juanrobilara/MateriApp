@@ -1,4 +1,4 @@
-package com.jurobil.materiapp.ui.screens.materiasEnCursoScreen
+package com.jurobil.materiapp.ui.screens.homeScreen.tabs.tramitesScreen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,20 +11,20 @@ import androidx.navigation.NavHostController
 import com.jurobil.materiapp.ui.screens.homeScreen.MainScaffold
 
 @Composable
-fun MateriasEnCursoScreen(
+fun TramitesScreen(
     navController: NavHostController
 ) {
     MainScaffold(
-        title = "Materias en curso",
-        currentRoute = "materias_curso",
+        title = "Trámites",
+        currentRoute = "tramites",
         onSignOut = {
             navController.navigate("login") {
-                popUpTo("materias_curso") { inclusive = true }
+                popUpTo("tramites") { inclusive = true }
             }
         },
         onNavigate = { route ->
             navController.navigate(route) {
-                popUpTo("materias_curso") { inclusive = false }
+                popUpTo("tramites") { inclusive = false }
                 launchSingleTop = true
             }
         },
@@ -36,7 +36,7 @@ fun MateriasEnCursoScreen(
                 .padding(innerPadding),
             contentAlignment = Alignment.Center
         ) {
-            Text("Acá se mostrarán las materias en curso.")
+            Text("Acá podrás gestionar tus trámites.")
         }
     }
 }

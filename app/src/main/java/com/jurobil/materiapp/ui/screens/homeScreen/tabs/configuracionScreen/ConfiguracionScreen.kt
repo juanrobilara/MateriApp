@@ -1,4 +1,4 @@
-package com.jurobil.materiapp.ui.screens.configuracionScreen
+package com.jurobil.materiapp.ui.screens.homeScreen.tabs.configuracionScreen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize

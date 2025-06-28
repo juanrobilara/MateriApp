@@ -7,16 +7,16 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.jurobil.materiapp.ui.screens.agregarCarreraScreen.AgregarCarreraScreen
-import com.jurobil.materiapp.ui.screens.configuracionScreen.ConfiguracionScreen
+import com.jurobil.materiapp.ui.screens.homeScreen.tabs.configuracionScreen.ConfiguracionScreen
 import com.jurobil.materiapp.ui.screens.detalleAsignaturaScreen.DetalleAsignaturaScreen
 import com.jurobil.materiapp.ui.screens.detalleCarreraScreen.DetalleCarreraScreen
 import com.jurobil.materiapp.ui.screens.editarCarreraScreen.EditarCarreraScreen
 import com.jurobil.materiapp.ui.screens.homeScreen.HomeScreen
 import com.jurobil.materiapp.ui.screens.loginScreen.LoginScreen
-import com.jurobil.materiapp.ui.screens.materiasEnCursoScreen.MateriasEnCursoScreen
+import com.jurobil.materiapp.ui.screens.homeScreen.tabs.materiasEnCursoScreen.MateriasEnCursoScreen
 import com.jurobil.materiapp.ui.screens.profileScreenWrapper.ProfileScreenWrapper
 import com.jurobil.materiapp.ui.screens.registerScreen.RegisterScreen
-import com.jurobil.materiapp.ui.screens.tramitesScreen.TramitesScreen
+import com.jurobil.materiapp.ui.screens.homeScreen.tabs.tramitesScreen.TramitesScreen
 import com.jurobil.materiapp.ui.screens.sessionCheckScreen.SessionCheckScreen
 
 @Composable
