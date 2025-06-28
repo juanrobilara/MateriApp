@@ -47,6 +47,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -171,25 +172,67 @@ fun HomeScreenContent(
                         .fillMaxWidth()
                         .padding(vertical = 8.dp)
                         .combinedClickable(
-                            onClick = {
-                                onNavigate("detalle_carrera/${carrera.id}")
-                            },
+                            onClick = { onNavigate("detalle_carrera/${carrera.id}") },
                             onLongClick = {
                                 selectedCarreraId = carrera.id
                                 showDialog = true
                             }
                         ),
                     colors = CardDefaults.cardColors(containerColor = fondoColor),
-                    shape = RoundedCornerShape(12.dp),
-                    elevation = CardDefaults.cardElevation(8.dp)
+                    shape = RoundedCornerShape(16.dp),
+                    elevation = CardDefaults.cardElevation(6.dp)
                 ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text(carrera.nombre, style = MaterialTheme.typography.titleLarge, color = Color.Black)
-                        Text(carrera.descripcion, style = MaterialTheme.typography.bodySmall, color = Color.Black)
-                        resumen?.let {
-                            Spacer(Modifier.height(4.dp))
-                            Text("Completado: ${it.porcentaje}%", color = Color.Black)
-                            Text("Promedio: ${"%.2f".format(it.promedio)}", color = Color.Black)
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        // Título
+                        Text(
+                            text = carrera.nombre,
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            maxLines = 1
+                        )
+
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        // Descripción
+                        Text(
+                            text = carrera.descripcion.ifBlank { "Sin descripción disponible" },
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        // Fila con cantidad de asignaturas y resumen (si hay)
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = "Asignaturas: ${carrera.cantidadAsignaturas}",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+
+                            resumen?.let {
+                                Column(horizontalAlignment = Alignment.End) {
+                                    Text(
+                                        text = "Completado: ${it.porcentaje}%",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.secondary
+                                    )
+                                    Text(
+                                        text = "Promedio: ${"%.2f".format(it.promedio)}",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.secondary
+                                    )
+                                }
+                            }
                         }
                     }
                 }

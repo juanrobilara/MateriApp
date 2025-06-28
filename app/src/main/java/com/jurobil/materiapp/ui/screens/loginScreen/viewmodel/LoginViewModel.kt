@@ -33,7 +33,7 @@ class LoginViewModel @Inject constructor(
 
     init {
         if (testMode){
-            _email.value = "asd@gmail.com"
+            _email.value = "cristian@gmail.com"
             _password.value = "123456"
         }
     }

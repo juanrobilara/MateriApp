@@ -1,5 +1,6 @@
 package com.jurobil.materiapp.ui.screens.homeScreen.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
@@ -9,6 +10,7 @@ import com.jurobil.materiapp.data.database.dao.AsignaturaDao
 import com.jurobil.materiapp.data.database.dao.CarreraDao
 import com.jurobil.materiapp.data.database.entities.AsignaturaEntity
 import com.jurobil.materiapp.data.database.entities.CarreraEntity
+import com.jurobil.materiapp.domain.fakeRepository.FakeRepository
 import com.jurobil.materiapp.domain.model.Asignatura
 import com.jurobil.materiapp.domain.model.Carrera
 import com.jurobil.materiapp.domain.model.CarreraResumen
@@ -17,6 +19,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -26,7 +29,8 @@ class HomeViewModel @Inject constructor(
     private val firestore: FirebaseFirestore,
     private val carreraDao: CarreraDao,
     private val asignaturaDao: AsignaturaDao,
-    private val repositorio: RepositorioCarreras
+    private val repositorio: RepositorioCarreras,
+    private val fakeRepository: FakeRepository
 ) : ViewModel() {
 
     private val _greeting = MutableStateFlow("")
@@ -41,32 +45,44 @@ class HomeViewModel @Inject constructor(
     private val _resumenCarreras = MutableStateFlow<Map<String, CarreraResumen>>(emptyMap())
     val resumenCarreras: StateFlow<Map<String, CarreraResumen>> = _resumenCarreras
 
+    private val _currentAsignatura = MutableStateFlow<Asignatura?>(fakeRepository.currentAsignatura)
+    val currentAsignatura: StateFlow<Asignatura?> = _currentAsignatura
+
     init {
+        _carreras.value = fakeRepository.carrerasEjemplo
         getCurrentUserGreeting()
-        sincronizarFirestoreConRoom()
-        sincronizarAsignaturasFirestoreConRoom()
-        observarCarrerasLocales()
-        observarAsignaturasYActualizarResumen()
     }
+
+    fun getAsignaturasFake(carreraId: String) {
+        viewModelScope.launch {
+            val asignaturas = fakeRepository.generarAsignaturasPorCarrera(carreraId)
+            _asignaturas.value = asignaturas
+        }
+    }
+
+    fun setAginaturaFake(asignatura: Asignatura) {
+        Log.i("Klyxdev", "setAginaturaFake: $asignatura")
+        fakeRepository.currentAsignatura = asignatura
+        _currentAsignatura.value = asignatura
+    }
+
 
     private fun getCurrentUserGreeting() {
         val currentUser = auth.currentUser
         _greeting.value = currentUser?.displayName.toString()
     }
 
-    private fun sincronizarYObservar() {
-        viewModelScope.launch {
-            try {
-                repositorio.sincronizarCarreras()
-                val locales = repositorio.getCarrerasLocal()
-                _carreras.value = locales
-            } catch (e: Exception) {
-                // Si falla Firestore, aún puedes mostrar datos locales
-                _carreras.value = repositorio.getCarrerasLocal()
+    fun getCarreraFake(id: String): Carrera? {
+        return fakeRepository.carrerasEjemplo.find { it.id == id }
+    }
+
+    fun updateAsignaturaCompletionFake(asignaturaId: String, checked: Boolean) {
+        _asignaturas.update { asignaturas ->
+            asignaturas.map {
+                if (it.id == asignaturaId) it.copy(completada = checked) else it
             }
         }
     }
-
 
 
     private fun sincronizarFirestoreConRoom() {
@@ -93,20 +109,6 @@ class HomeViewModel @Inject constructor(
             }
     }
 
-    private fun observarCarrerasLocales() {
-        viewModelScope.launch {
-            carreraDao.getAllFlow().collect { entidades ->
-                _carreras.value = entidades.map {
-                    Carrera(
-                        id = it.id,
-                        nombre = it.nombre,
-                        descripcion = it.descripcion,
-                        cantidadAsignaturas = it.cantidadAsignaturas
-                    )
-                }
-            }
-        }
-    }
 
 
     fun updateCarrera(carreraId: String, nombre: String, descripcion: String) {
@@ -162,12 +164,8 @@ class HomeViewModel @Inject constructor(
                     .set(asignatura)
             }
 
-            // Re-sincroniza después de agregar
-            sincronizarYObservar()
         }
     }
-
-
 
 
     fun deleteCarrera(id: String) {
@@ -181,9 +179,6 @@ class HomeViewModel @Inject constructor(
                     // 2. Eliminar localmente en Room
                     carreraDao.deleteById(id)
                     asignaturaDao.clearByCarreraId(id)
-
-                    // 3. Re-sincronizar o volver a cargar
-                    sincronizarYObservar()
                 }
             }
     }
@@ -203,9 +198,11 @@ class HomeViewModel @Inject constructor(
                         .get()
                         .addOnSuccessListener { asignaturasSnapshot ->
                             viewModelScope.launch {
-                                val asignaturas = asignaturasSnapshot.documents.mapNotNull { asignaturaDoc ->
-                                    asignaturaDoc.toObject(Asignatura::class.java)?.copy(id = asignaturaDoc.id)
-                                }
+                                val asignaturas =
+                                    asignaturasSnapshot.documents.mapNotNull { asignaturaDoc ->
+                                        asignaturaDoc.toObject(Asignatura::class.java)
+                                            ?.copy(id = asignaturaDoc.id)
+                                    }
 
                                 val entidades = asignaturas.map {
                                     AsignaturaEntity(
@@ -280,6 +277,7 @@ class HomeViewModel @Inject constructor(
                 onResult(task.isSuccessful)
             }
     }
+
 
 
 }

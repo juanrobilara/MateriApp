@@ -52,8 +52,8 @@ fun DetalleCarreraScreen(
     val asignaturas by viewModel.asignaturas.collectAsState()
 
     LaunchedEffect(carreraId) {
-        viewModel.getCarrera(carreraId) { carrera = it }
-        viewModel.getAsignaturas(carreraId)
+        carrera = viewModel.getCarreraFake(carreraId)
+        viewModel.getAsignaturasFake(carreraId)
     }
 
     carrera?.let { carrera ->
@@ -133,6 +133,7 @@ fun DetalleCarreraScreen(
                                 .fillMaxWidth()
                                 .padding(vertical = 4.dp)
                                 .clickable {
+                                    viewModel.setAginaturaFake(asignatura)
                                     navController.navigate("detalle_asignatura/${carrera.id}/${asignatura.id}")
                                 },
                             shape = RoundedCornerShape(12.dp),
@@ -155,7 +156,7 @@ fun DetalleCarreraScreen(
                                 Checkbox(
                                     checked = asignatura.completada,
                                     onCheckedChange = { checked ->
-                                        viewModel.updateAsignaturaCompletion(carrera.id, asignatura.id, checked)
+                                        viewModel.updateAsignaturaCompletionFake(asignatura.id, checked)
                                     }
                                 )
                             }

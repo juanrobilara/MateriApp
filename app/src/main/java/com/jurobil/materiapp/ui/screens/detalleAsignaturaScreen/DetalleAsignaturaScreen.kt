@@ -1,5 +1,7 @@
 package com.jurobil.materiapp.ui.screens.detalleAsignaturaScreen
 
+import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,18 +26,21 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.jurobil.materiapp.domain.fakeRepository.FakeRepository
 import com.jurobil.materiapp.domain.model.Asignatura
 import com.jurobil.materiapp.ui.screens.homeScreen.viewmodel.HomeViewModel
 
@@ -47,35 +52,22 @@ fun DetalleAsignaturaScreen(
     navHostController: NavHostController,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
-    var asignatura by remember { mutableStateOf<Asignatura?>(null) }
+    val currentAsignatura by viewModel.currentAsignatura.collectAsState()
+    var asignatura by remember { mutableStateOf(currentAsignatura) }
     var nombre by remember { mutableStateOf("") }
     var nota by remember { mutableStateOf("") }
     var observaciones by remember { mutableStateOf("") }
     var isSaving by remember { mutableStateOf(false) }
 
+
+    Log.i("Klyxdev", "setAginaturaFake: $currentAsignatura")
+
     // Cargar datos de la asignatura
     LaunchedEffect(asignaturaId) {
-        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return@LaunchedEffect
-        FirebaseFirestore.getInstance()
-            .collection("users")
-            .document(uid)
-            .collection("carreras")
-            .document(carreraId)
-            .collection("asignaturas")
-            .document(asignaturaId)
-            .get()
-            .addOnSuccessListener { doc ->
-                val asign = doc.toObject(Asignatura::class.java)
-                asign?.let {
-                    asignatura = it
-                    nombre = it.nombre
-                    nota = it.nota?.toString() ?: ""
-                    observaciones = it.observaciones ?: ""
-                }
-            }
+        viewModel.getAsignaturasFake(asignaturaId)
     }
 
-    if (asignatura == null) {
+    if (currentAsignatura == null) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
         }
@@ -106,7 +98,7 @@ fun DetalleAsignaturaScreen(
                     style = MaterialTheme.typography.titleMedium
                 )
                 Text(
-                    text = "Nombre: ${asignatura!!.nombre}",
+                    text = "Nombre: ${currentAsignatura!!.nombre}",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
