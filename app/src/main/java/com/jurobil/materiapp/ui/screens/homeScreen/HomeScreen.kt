@@ -291,7 +291,7 @@ fun MainScaffold(
         },
         floatingActionButton = {
             if (showFab) {
-                FloatingActionButton(onClick = { onNavigate("agregar_carrera") }) {
+                FloatingActionButton(onClick = { onNavigate("seleccionar_fuente_de_carrera") }) {
                     Icon(Icons.Default.Add, contentDescription = "Agregar carrera")
                 }
             }

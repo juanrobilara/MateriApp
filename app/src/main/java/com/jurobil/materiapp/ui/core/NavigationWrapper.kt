@@ -17,6 +17,8 @@ import com.jurobil.materiapp.ui.screens.homeScreen.tabs.materiasEnCursoScreen.Ma
 import com.jurobil.materiapp.ui.screens.profileScreenWrapper.ProfileScreenWrapper
 import com.jurobil.materiapp.ui.screens.registerScreen.RegisterScreen
 import com.jurobil.materiapp.ui.screens.homeScreen.tabs.tramitesScreen.TramitesScreen
+import com.jurobil.materiapp.ui.screens.seleccionenintraconsulta.SeleccionDeIntraconsultaScreen
+import com.jurobil.materiapp.ui.screens.seleccionfuentedecarrera.SeleccionarFuenteDeCarreraScreen
 import com.jurobil.materiapp.ui.screens.sessionCheckScreen.SessionCheckScreen
 
 @Composable
@@ -26,7 +28,7 @@ fun NavigationWrapper() {
         composable("login") { LoginScreen(navController = navController) }
         composable("register") { RegisterScreen(navController = navController) }
         composable("home") { HomeScreen(navController = navController) }
-        composable("agregar_carrera") {AgregarCarreraScreen(navController = navController)}
+        composable("agregar_carrera") { AgregarCarreraScreen(navController = navController) }
         composable("editar_carrera/{carreraId}") { backStackEntry ->
             val carreraId = backStackEntry.arguments?.getString("carreraId") ?: ""
             EditarCarreraScreen(navController, carreraId)
@@ -61,6 +63,12 @@ fun NavigationWrapper() {
         }
         composable("configuracion") {
             ConfiguracionScreen(navController = navController)
+        }
+        composable("seleccionar_fuente_de_carrera") {
+            SeleccionarFuenteDeCarreraScreen(navController = navController)
+        }
+        composable("seleccion_de_intraconsulta") {
+            SeleccionDeIntraconsultaScreen(navController = navController)
         }
     }
 }
