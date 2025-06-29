@@ -44,7 +44,7 @@ class FakeRepository @Inject constructor() {
     )
 
 
-    val carrerasEjemplo = listOf(
+    var carrerasEjemplo = listOf(
         Carrera(
             id = "1",
             nombre = "Ingeniería en Sistemas",

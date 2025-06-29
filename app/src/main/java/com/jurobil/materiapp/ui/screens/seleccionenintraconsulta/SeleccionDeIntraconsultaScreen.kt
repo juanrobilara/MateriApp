@@ -6,8 +6,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Card
@@ -25,11 +25,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.jurobil.materiapp.ui.screens.homeScreen.viewmodel.HomeViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SeleccionDeIntraconsultaScreen(
     navController: NavHostController,
+    homeViewModel: HomeViewModel = hiltViewModel(),
     viewModel: IntraconsultaViewModel = hiltViewModel()
 ) {
     val carreras = viewModel.carreras
@@ -55,6 +57,11 @@ fun SeleccionDeIntraconsultaScreen(
             items(carreras) { carrera ->
                 Card(
                     onClick = {
+                        homeViewModel.saveCarrera(
+                            nombre = carrera.nombre,
+                            descripcion = carrera.descripcion,
+                            cantidadAsignaturas = carrera.cantidadAsignaturas
+                        )
                         navController.popBackStack("home", false)
                         // TODO Arreglar y agregar a la lista de carreras
                     },

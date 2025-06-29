@@ -110,7 +110,6 @@ class HomeViewModel @Inject constructor(
     }
 
 
-
     fun updateCarrera(carreraId: String, nombre: String, descripcion: String) {
         val uid = auth.currentUser?.uid ?: return
         val carreraRef = firestore.collection("users")
@@ -140,31 +139,19 @@ class HomeViewModel @Inject constructor(
     }
 
     fun saveCarrera(nombre: String, descripcion: String, cantidadAsignaturas: Int) {
-        val uid = auth.currentUser?.uid ?: return
-        val carreraRef = firestore.collection("users")
-            .document(uid)
-            .collection("carreras")
-            .document()
-
+        val newID = fakeRepository.carrerasEjemplo.size + 1
         val carrera = Carrera(
-            id = carreraRef.id,
+            id = newID.toString(),
             nombre = nombre,
             descripcion = descripcion,
             cantidadAsignaturas = cantidadAsignaturas
         )
 
-        carreraRef.set(carrera).addOnSuccessListener {
-            repeat(cantidadAsignaturas) { index ->
-                val asignatura = Asignatura(
-                    nombre = "Asignatura ${index + 1}",
-                    numero = index + 1
-                )
-                carreraRef.collection("asignaturas")
-                    .document(asignatura.id)
-                    .set(asignatura)
-            }
+        val newListCarreras = fakeRepository.carrerasEjemplo + carrera
 
-        }
+        fakeRepository.carrerasEjemplo = newListCarreras
+
+        reloadCarreras()
     }
 
 
@@ -278,6 +265,10 @@ class HomeViewModel @Inject constructor(
             }
     }
 
+    fun reloadCarreras() {
+        val newListCarreras = fakeRepository.carrerasEjemplo
+        _carreras.value = newListCarreras
+    }
 
 
 }
