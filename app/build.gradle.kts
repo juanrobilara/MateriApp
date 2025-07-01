@@ -72,6 +72,7 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.4.0")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.4")
     implementation ("androidx.compose.material:material-icons-extended")
+    implementation ("androidx.datastore:datastore-preferences:1.0.0")
 
 
     testImplementation(libs.junit)

@@ -7,6 +7,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.jurobil.materiapp.ui.screens.agregarCarreraScreen.AgregarCarreraScreen
+import com.jurobil.materiapp.ui.screens.ajustesAcercaScreen.AjustesAcercaScreen
+import com.jurobil.materiapp.ui.screens.ajustesAparienciaScreen.AjustesAparienciaScreen
+import com.jurobil.materiapp.ui.screens.ajustesAyudaScreen.AjustesAyudaScreen
+import com.jurobil.materiapp.ui.screens.ajustesNotificacionesScreen.AjustesNotificacionesScreen
+import com.jurobil.materiapp.ui.screens.ajustesPerfilScreen.AjustesPerfilScreen
 import com.jurobil.materiapp.ui.screens.homeScreen.tabs.configuracionScreen.ConfiguracionScreen
 import com.jurobil.materiapp.ui.screens.detalleAsignaturaScreen.DetalleAsignaturaScreen
 import com.jurobil.materiapp.ui.screens.detalleCarreraScreen.DetalleCarreraScreen
@@ -70,5 +75,21 @@ fun NavigationWrapper() {
         composable("seleccion_de_intraconsulta") {
             SeleccionDeIntraconsultaScreen(navController = navController)
         }
+        composable("ajustes_perfil") {
+            AjustesPerfilScreen(navController = navController)
+        }
+        composable("ajustes_notificaciones") {
+            AjustesNotificacionesScreen(navController = navController)
+        }
+        composable("ajustes_apariencia") {
+            AjustesAparienciaScreen(navController = navController)
+        }
+        composable("ajustes_acerca") {
+            AjustesAcercaScreen(navController = navController)
+        }
+        composable("ajustes_ayuda") {
+            AjustesAyudaScreen(navController = navController)
+        }
+
     }
 }
