@@ -7,16 +7,23 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.jurobil.materiapp.ui.screens.agregarCarreraScreen.AgregarCarreraScreen
-import com.jurobil.materiapp.ui.screens.configuracionScreen.ConfiguracionScreen
+import com.jurobil.materiapp.ui.screens.ajustesAcercaScreen.AjustesAcercaScreen
+import com.jurobil.materiapp.ui.screens.ajustesAparienciaScreen.AjustesAparienciaScreen
+import com.jurobil.materiapp.ui.screens.ajustesAyudaScreen.AjustesAyudaScreen
+import com.jurobil.materiapp.ui.screens.ajustesNotificacionesScreen.AjustesNotificacionesScreen
+import com.jurobil.materiapp.ui.screens.ajustesPerfilScreen.AjustesPerfilScreen
+import com.jurobil.materiapp.ui.screens.homeScreen.tabs.configuracionScreen.ConfiguracionScreen
 import com.jurobil.materiapp.ui.screens.detalleAsignaturaScreen.DetalleAsignaturaScreen
 import com.jurobil.materiapp.ui.screens.detalleCarreraScreen.DetalleCarreraScreen
 import com.jurobil.materiapp.ui.screens.editarCarreraScreen.EditarCarreraScreen
 import com.jurobil.materiapp.ui.screens.homeScreen.HomeScreen
 import com.jurobil.materiapp.ui.screens.loginScreen.LoginScreen
-import com.jurobil.materiapp.ui.screens.materiasEnCursoScreen.MateriasEnCursoScreen
+import com.jurobil.materiapp.ui.screens.homeScreen.tabs.materiasEnCursoScreen.MateriasEnCursoScreen
 import com.jurobil.materiapp.ui.screens.profileScreenWrapper.ProfileScreenWrapper
 import com.jurobil.materiapp.ui.screens.registerScreen.RegisterScreen
-import com.jurobil.materiapp.ui.screens.tramitesScreen.TramitesScreen
+import com.jurobil.materiapp.ui.screens.homeScreen.tabs.tramitesScreen.TramitesScreen
+import com.jurobil.materiapp.ui.screens.seleccionenintraconsulta.SeleccionDeIntraconsultaScreen
+import com.jurobil.materiapp.ui.screens.seleccionfuentedecarrera.SeleccionarFuenteDeCarreraScreen
 import com.jurobil.materiapp.ui.screens.sessionCheckScreen.SessionCheckScreen
 
 @Composable
@@ -26,7 +33,7 @@ fun NavigationWrapper() {
         composable("login") { LoginScreen(navController = navController) }
         composable("register") { RegisterScreen(navController = navController) }
         composable("home") { HomeScreen(navController = navController) }
-        composable("agregar_carrera") {AgregarCarreraScreen(navController = navController)}
+        composable("agregar_carrera") { AgregarCarreraScreen(navController = navController) }
         composable("editar_carrera/{carreraId}") { backStackEntry ->
             val carreraId = backStackEntry.arguments?.getString("carreraId") ?: ""
             EditarCarreraScreen(navController, carreraId)
@@ -62,5 +69,27 @@ fun NavigationWrapper() {
         composable("configuracion") {
             ConfiguracionScreen(navController = navController)
         }
+        composable("seleccionar_fuente_de_carrera") {
+            SeleccionarFuenteDeCarreraScreen(navController = navController)
+        }
+        composable("seleccion_de_intraconsulta") {
+            SeleccionDeIntraconsultaScreen(navController = navController)
+        }
+        composable("ajustes_perfil") {
+            AjustesPerfilScreen(navController = navController)
+        }
+        composable("ajustes_notificaciones") {
+            AjustesNotificacionesScreen(navController = navController)
+        }
+        composable("ajustes_apariencia") {
+            AjustesAparienciaScreen(navController = navController)
+        }
+        composable("ajustes_acerca") {
+            AjustesAcercaScreen(navController = navController)
+        }
+        composable("ajustes_ayuda") {
+            AjustesAyudaScreen(navController = navController)
+        }
+
     }
 }

@@ -1,4 +1,4 @@
-package com.jurobil.materiapp.ui.screens.tramitesScreen
+package com.jurobil.materiapp.ui.screens.ajustesPerfilScreen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,23 +11,12 @@ import androidx.navigation.NavHostController
 import com.jurobil.materiapp.ui.screens.homeScreen.MainScaffold
 
 @Composable
-fun TramitesScreen(
-    navController: NavHostController
-) {
+fun AjustesPerfilScreen(navController: NavHostController) {
     MainScaffold(
-        title = "Trámites",
-        currentRoute = "tramites",
-        onSignOut = {
-            navController.navigate("login") {
-                popUpTo("tramites") { inclusive = true }
-            }
-        },
-        onNavigate = { route ->
-            navController.navigate(route) {
-                popUpTo("tramites") { inclusive = false }
-                launchSingleTop = true
-            }
-        },
+        title = "Perfil",
+        currentRoute = "ajustes_perfil",
+        onNavigate = { navController.navigate(it) },
+        onSignOut = { navController.navigate("login") },
         showFab = false
     ) { innerPadding ->
         Box(
@@ -36,7 +25,7 @@ fun TramitesScreen(
                 .padding(innerPadding),
             contentAlignment = Alignment.Center
         ) {
-            Text("Acá podrás gestionar tus trámites.")
+            Text("Pantalla de ajustes de Perfil.")
         }
     }
 }

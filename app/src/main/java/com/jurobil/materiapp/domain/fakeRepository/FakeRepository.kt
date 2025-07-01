@@ -10,7 +10,41 @@ class FakeRepository @Inject constructor() {
 
     var currentAsignatura : Asignatura? = null
 
-    val carrerasEjemplo = listOf(
+    val carrerasIntraconsulta = listOf(
+        Carrera(
+            id = "11",
+            nombre = "Biotecnología",
+            descripcion = "Aplicación de la biología y la tecnología en la producción industrial y científica.",
+            cantidadAsignaturas = 9
+        ),
+        Carrera(
+            id = "12",
+            nombre = "Nutrición",
+            descripcion = "Formación en alimentación saludable, dietética y promoción de la salud.",
+            cantidadAsignaturas = 7
+        ),
+        Carrera(
+            id = "13",
+            nombre = "Ingeniería Ambiental",
+            descripcion = "Estudios sobre impacto ambiental, sostenibilidad y gestión de recursos naturales.",
+            cantidadAsignaturas = 11
+        ),
+        Carrera(
+            id = "14",
+            nombre = "Educación Inicial",
+            descripcion = "Carrera enfocada en el desarrollo infantil y la enseñanza temprana.",
+            cantidadAsignaturas = 8
+        ),
+        Carrera(
+            id = "15",
+            nombre = "Turismo",
+            descripcion = "Gestión de servicios turísticos, hotelería y planificación de viajes.",
+            cantidadAsignaturas = 6
+        )
+    )
+
+
+    var carrerasEjemplo = listOf(
         Carrera(
             id = "1",
             nombre = "Ingeniería en Sistemas",

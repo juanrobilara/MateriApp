@@ -38,6 +38,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavOptions
 import com.jurobil.materiapp.ui.screens.homeScreen.viewmodel.HomeViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -128,7 +129,7 @@ fun AgregarCarreraScreen(
                         descripcion = descripcionCarrera,
                         cantidadAsignaturas = cantidad
                     )
-                    navController.popBackStack()
+                    navController.popBackStack("home", false)
                 },
                 modifier = Modifier
                     .fillMaxWidth()

@@ -38,6 +38,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -64,6 +65,10 @@ fun HomeScreen(
     val greeting by viewModel.greeting.collectAsState()
     val carreras by viewModel.carreras.collectAsState()
     val resumenCarreras by viewModel.resumenCarreras.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.reloadCarreras()
+    }
 
     MainScaffold(
         title = "Bienvenido, $greeting",
@@ -291,7 +296,7 @@ fun MainScaffold(
         },
         floatingActionButton = {
             if (showFab) {
-                FloatingActionButton(onClick = { onNavigate("agregar_carrera") }) {
+                FloatingActionButton(onClick = { onNavigate("seleccionar_fuente_de_carrera") }) {
                     Icon(Icons.Default.Add, contentDescription = "Agregar carrera")
                 }
             }
