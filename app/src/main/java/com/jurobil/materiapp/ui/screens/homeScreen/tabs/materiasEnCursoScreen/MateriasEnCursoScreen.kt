@@ -59,7 +59,7 @@ fun MateriasEnCursoScreen(
     val tealPrimary = TealPrimary
 
     MainScaffold(
-        title = "Materias - ${uiState.carrera?.nombre ?: ""}",
+        title = "Materias En curso",
         currentRoute = "materias_curso",
         onSignOut = {
             navController.navigate("login") {
@@ -115,7 +115,7 @@ fun AsignaturaCard(asignatura: AsignaturaNew, color: Color) {
             Text(asignatura.estado.name, color = color)
             if (asignatura.observaciones.isNotEmpty()) {
                 Spacer(Modifier.height(8.dp))
-                Text("Observaciones: ${asignatura.observaciones}", style = MaterialTheme.typography.bodySmall)
+                Text("Observaciones: No presenta", style = MaterialTheme.typography.bodySmall)
             }
         }
     }

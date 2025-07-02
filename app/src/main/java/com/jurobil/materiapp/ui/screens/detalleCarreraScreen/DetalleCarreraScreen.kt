@@ -1,5 +1,6 @@
 package com.jurobil.materiapp.ui.screens.detalleCarreraScreen
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -73,7 +74,8 @@ fun DetalleCarreraScreen(
             Column(Modifier.padding(padding).padding(16.dp)) {
                 Card(
                     shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    elevation = CardDefaults.cardElevation(4.dp)
                 ) {
                     Column(Modifier.padding(16.dp)) {
                         Text("Descripción:", style = MaterialTheme.typography.labelMedium)
@@ -105,7 +107,7 @@ fun DetalleCarreraScreen(
                             },
                             shape = RoundedCornerShape(12.dp),
                             colors = CardDefaults.cardColors(
-                                containerColor = if (asignatura.completada) CompleteGreen else MaterialTheme.colorScheme.surface
+                                containerColor = if (asignatura.completada) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface
                             )
                         ) {
                             Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
