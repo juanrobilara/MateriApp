@@ -25,6 +25,7 @@ import com.jurobil.materiapp.ui.screens.homeScreen.tabs.tramitesScreen.TramitesS
 import com.jurobil.materiapp.ui.screens.seleccionenintraconsulta.SeleccionDeIntraconsultaScreen
 import com.jurobil.materiapp.ui.screens.seleccionfuentedecarrera.SeleccionarFuenteDeCarreraScreen
 import com.jurobil.materiapp.ui.screens.sessionCheckScreen.SessionCheckScreen
+import com.jurobil.materiapp.ui.screens.tutoresScreen.TutoresScreen
 
 @Composable
 fun NavigationWrapper() {
@@ -89,6 +90,9 @@ fun NavigationWrapper() {
         }
         composable("ajustes_ayuda") {
             AjustesAyudaScreen(navController = navController)
+        }
+        composable("tutores") {
+            TutoresScreen(navController = navController)
         }
 
     }
