@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Assignment
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CoPresent
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
@@ -225,8 +226,9 @@ fun MainScaffold(
     val items = listOf(
         BottomNavItem("home", Icons.Default.Home, "Inicio"),
         BottomNavItem("materias_curso", Icons.Default.School, "En curso"),
+        BottomNavItem("tutores", Icons.Default.CoPresent, "Tutorías"),
         BottomNavItem("tramites", Icons.AutoMirrored.Filled.Assignment, "Trámites"),
-        BottomNavItem("configuracion", Icons.Default.Settings, "Configuración")
+        BottomNavItem("configuracion", Icons.Default.Settings, "Ajustes")
     )
 
     Scaffold(

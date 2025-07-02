@@ -2,6 +2,7 @@ package com.jurobil.materiapp.domain.fakeRepository
 
 import com.jurobil.materiapp.domain.model.Asignatura
 import com.jurobil.materiapp.domain.model.Carrera
+import com.jurobil.materiapp.domain.model.Tutor
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -130,4 +131,99 @@ class FakeRepository @Inject constructor() {
             )
         }
     }
+
+
+    val tutoresEjemplo = listOf(
+        Tutor(
+            id = "t1",
+            nombre = "Ana Gómez",
+            areaExpertise = "Matemáticas y Física",
+            materias = listOf("Matemática", "Física"),
+            fotoUrl = "https://images.unsplash.com/photo-1680127499432-d93494c09eb0?q=80&w=903&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+        ),
+        Tutor(
+            id = "t2",
+            nombre = "Carlos Pérez",
+            areaExpertise = "Programación y Software",
+            materias = listOf("Programación I", "Estructuras de Datos", "Ingeniería de Software"),
+            fotoUrl = "https://images.unsplash.com/photo-1607990281513-2c110a25bd8c?q=80&w=934&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+        ),
+        Tutor(
+            id = "t3",
+            nombre = "Lucía Fernández",
+            areaExpertise = "Ciencias Sociales",
+            materias = listOf("Comunicación Oral", "Historia del Arte"),
+            fotoUrl = null
+        ),
+        Tutor(
+            id = "t4",
+            nombre = "Jorge Martínez",
+            areaExpertise = "Química y Biología",
+            materias = listOf("Química"),
+            fotoUrl = "https://images.unsplash.com/photo-1726722886957-2ed42b15aaa3?q=80&w=896&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+        ),
+        Tutor(
+            id = "t5",
+            nombre = "María López",
+            areaExpertise = "Derecho",
+            materias = listOf("Derecho Civil"),
+            fotoUrl = "https://plus.unsplash.com/premium_photo-1664392159809-0834c57c6637?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+        ),
+
+        Tutor(
+            id = "t6",
+            nombre = "Diego Ramírez",
+            areaExpertise = "Estadística",
+            materias = listOf("Estadística"),
+            fotoUrl = "https://randomuser.me/api/portraits/men/32.jpg"
+        ),
+        Tutor(
+            id = "t7",
+            nombre = "Sofía Torres",
+            areaExpertise = "Diseño Gráfico",
+            materias = listOf("Diseño Gráfico"),
+            fotoUrl = "https://randomuser.me/api/portraits/women/45.jpg"
+        ),
+        Tutor(
+            id = "t8",
+            nombre = "Martín Silva",
+            areaExpertise = "Comunicación",
+            materias = listOf("Comunicación Oral"),
+            fotoUrl = null
+        ),
+        Tutor(
+            id = "t9",
+            nombre = "Paula Méndez",
+            areaExpertise = "Marketing",
+            materias = listOf("Marketing"),
+            fotoUrl = "https://randomuser.me/api/portraits/women/68.jpg"
+        ),
+        Tutor(
+            id = "t10",
+            nombre = "Lucas Fernández",
+            areaExpertise = "Arquitectura",
+            materias = listOf("Arquitectura Digital"),
+            fotoUrl = null
+        ),
+        Tutor(
+            id = "t11",
+            nombre = "Elena Ríos",
+            areaExpertise = "Psicología",
+            materias = listOf("Psicología General"),
+            fotoUrl = "https://randomuser.me/api/portraits/women/22.jpg"
+        )
+    )
+    // Método para filtrar tutores por materia y nombre:
+    fun filtrarTutores(query: String, materiaFiltro: String?): List<Tutor> {
+        return tutoresEjemplo.filter { tutor ->
+            val matchesQuery = tutor.nombre.contains(query, ignoreCase = true) ||
+                    tutor.areaExpertise.contains(query, ignoreCase = true)
+            val matchesMateria = materiaFiltro.isNullOrEmpty() || tutor.materias.contains(materiaFiltro)
+            matchesQuery && matchesMateria
+        }
+    }
+
+
+
+
 }
