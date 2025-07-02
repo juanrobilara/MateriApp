@@ -1,6 +1,7 @@
 package com.jurobil.materiapp.ui.screens.detalleCarreraScreen
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -39,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.jurobil.materiapp.domain.model.Carrera
+import com.jurobil.materiapp.ui.core.theme.CompleteGreen
 import com.jurobil.materiapp.ui.screens.homeScreen.viewmodel.HomeViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -55,21 +57,11 @@ fun DetalleCarreraScreen(
         carrera = viewModel.getCarreraFake(carreraId)
         viewModel.getAsignaturasFake(carreraId)
     }
-
-    carrera?.let { carrera ->
-        val completadas = asignaturas.count { it.completada }
-        val total = asignaturas.size
-        val porcentaje = if (total > 0) (completadas * 100 / total) else 0
-        val promedio = asignaturas
-            .filter { it.completada }
-            .map { it.nota }
-            .average()
-            .takeIf { it.isFinite() } ?: 0.0
-
+    carrera?.let {
         Scaffold(
             topBar = {
                 CenterAlignedTopAppBar(
-                    title = { Text(carrera.nombre) },
+                    title = { Text(it.nombre) },
                     navigationIcon = {
                         IconButton(onClick = { navController.popBackStack() }) {
                             Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
@@ -77,87 +69,53 @@ fun DetalleCarreraScreen(
                     }
                 )
             }
-        ) { innerPadding ->
-            Column(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .padding(16.dp)
-                    .fillMaxSize()
-            ) {
-
-                // Resumen
+        ) { padding ->
+            Column(Modifier.padding(padding).padding(16.dp)) {
                 Card(
-                    modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
                 ) {
                     Column(Modifier.padding(16.dp)) {
-                        Text(
-                            text = "Descripción:",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                        Text(carrera.descripcion, style = MaterialTheme.typography.bodyMedium)
-
+                        Text("Descripción:", style = MaterialTheme.typography.labelMedium)
+                        Text(it.descripcion, style = MaterialTheme.typography.bodyMedium)
                         Spacer(Modifier.height(12.dp))
 
-                        LinearProgressIndicator(
-                            progress = porcentaje / 100f,
-                            modifier = Modifier.fillMaxWidth(),
-                            color = MaterialTheme.colorScheme.primary
-                        )
+                        val completadas = asignaturas.count { it.completada }
+                        val total = asignaturas.size
+                        val porcentaje = if (total > 0) (completadas * 100 / total) else 0
+                        val promedio = asignaturas.filter { it.completada }.map { it.nota }.average().takeIf { it.isFinite() } ?: 0.0
+
+                        LinearProgressIndicator(progress = porcentaje / 100f, modifier = Modifier.fillMaxWidth())
                         Spacer(Modifier.height(4.dp))
                         Text("Completado: $porcentaje%")
-
-                        Spacer(Modifier.height(4.dp))
                         Text("Promedio: ${"%.2f".format(promedio)}")
                     }
                 }
 
                 Spacer(Modifier.height(16.dp))
-
-                Text(
-                    "Asignaturas",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary
-                )
-
+                Text("Asignaturas", style = MaterialTheme.typography.titleMedium)
                 Spacer(Modifier.height(8.dp))
 
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize()
-                ) {
+                LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     items(asignaturas) { asignatura ->
                         Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 4.dp)
-                                .clickable {
-                                    viewModel.setAginaturaFake(asignatura)
-                                    navController.navigate("detalle_asignatura/${carrera.id}/${asignatura.id}")
-                                },
+                            modifier = Modifier.fillMaxWidth().clickable {
+                                viewModel.setAginaturaFake(asignatura)
+                                navController.navigate("detalle_asignatura/${carreraId}/${asignatura.id}")
+                            },
                             shape = RoundedCornerShape(12.dp),
                             colors = CardDefaults.cardColors(
-                                containerColor = if (asignatura.completada)
-                                    MaterialTheme.colorScheme.secondaryContainer
-                                else MaterialTheme.colorScheme.surface
+                                containerColor = if (asignatura.completada) CompleteGreen else MaterialTheme.colorScheme.surface
                             )
                         ) {
-                            Row(
-                                Modifier
-                                    .padding(16.dp)
-                                    .fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
+                            Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                                 Column(Modifier.weight(1f)) {
                                     Text(asignatura.nombre, style = MaterialTheme.typography.titleMedium)
                                     Text("Nota: ${asignatura.nota}", style = MaterialTheme.typography.bodySmall)
                                 }
                                 Checkbox(
                                     checked = asignatura.completada,
-                                    onCheckedChange = { checked ->
-                                        viewModel.updateAsignaturaCompletionFake(asignatura.id, checked)
-                                    }
+                                    onCheckedChange = { viewModel.updateAsignaturaCompletionFake(asignatura.id, it) }
                                 )
                             }
                         }

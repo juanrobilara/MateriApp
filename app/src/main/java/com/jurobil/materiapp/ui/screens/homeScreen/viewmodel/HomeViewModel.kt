@@ -170,6 +170,11 @@ class HomeViewModel @Inject constructor(
             }
     }
 
+    fun deleteCarreraMock(id: String) {
+        fakeRepository.carrerasEjemplo = fakeRepository.carrerasEjemplo.filterNot { it.id == id }
+        reloadCarreras()
+    }
+
 
     private fun sincronizarAsignaturasFirestoreConRoom() {
         val uid = auth.currentUser?.uid ?: return
