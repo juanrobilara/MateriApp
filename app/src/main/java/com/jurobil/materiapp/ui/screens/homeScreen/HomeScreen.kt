@@ -1,6 +1,7 @@
 package com.jurobil.materiapp.ui.screens.homeScreen
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -47,6 +48,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -55,6 +57,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.jurobil.materiapp.domain.model.Carrera
 import com.jurobil.materiapp.domain.model.CarreraResumen
+import com.jurobil.materiapp.ui.core.theme.CompleteGreen
+import com.jurobil.materiapp.ui.core.theme.ProgressOrange
+import com.jurobil.materiapp.ui.core.theme.WarningYellow
 import com.jurobil.materiapp.ui.screens.homeScreen.viewmodel.HomeViewModel
 
 @Composable
@@ -66,182 +71,143 @@ fun HomeScreen(
     val carreras by viewModel.carreras.collectAsState()
     val resumenCarreras by viewModel.resumenCarreras.collectAsState()
 
-    LaunchedEffect(Unit) {
-        viewModel.reloadCarreras()
-    }
+    var showDialog by remember { mutableStateOf(false) }
+    var selectedCarreraId by remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(Unit) { viewModel.reloadCarreras() }
 
     MainScaffold(
         title = "Bienvenido, $greeting",
         currentRoute = "home",
         onSignOut = {
             viewModel.signOut()
-            navController.navigate("login") {
-                popUpTo("home") { inclusive = true }
-            }
+            navController.navigate("login") { popUpTo("home") { inclusive = true } }
         },
         onNavigate = { route ->
-            navController.navigate(route) {
-                popUpTo("home") { inclusive = false }
-                launchSingleTop = true
-            }
+            navController.navigate(route) { popUpTo("home") { inclusive = false }; launchSingleTop = true }
         },
         showFab = true
     ) { innerPadding ->
+
         HomeScreenContent(
-            greeting = greeting,
             carreras = carreras,
             resumenes = resumenCarreras,
-            onDeleteCarrera = { id -> viewModel.deleteCarrera(id) },
-            onEditCarrera = { id -> navController.navigate("editar_carrera/$id") },
-            onNavigate = { route ->
-                navController.navigate(route) {
-                    popUpTo("home") { inclusive = false }
-                    launchSingleTop = true
-                }
+            onNavigate = { route -> navController.navigate(route) },
+            onLongClickCarrera = {
+                selectedCarreraId = it
+                showDialog = true
             },
             modifier = Modifier.padding(innerPadding)
         )
-    }
-}
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
-@Composable
-fun HomeScreenContent(
-    greeting: String,
-    carreras: List<Carrera>,
-    resumenes: Map<String, CarreraResumen>,
-    onDeleteCarrera: (String) -> Unit,
-    onEditCarrera: (String) -> Unit,
-    onNavigate: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    var showDialog by remember { mutableStateOf(false) }
-    var selectedCarreraId by remember { mutableStateOf<String?>(null) }
-
-    if (showDialog && selectedCarreraId != null) {
-        AlertDialog(
-            onDismissRequest = {
-                showDialog = false
-                selectedCarreraId = null
-            },
-            title = { Text("Acciones sobre carrera") },
-            text = { Text("¿Qué querés hacer con esta carrera?") },
-            confirmButton = {
-                TextButton(onClick = {
-                    onEditCarrera(selectedCarreraId!!)
+        if (showDialog && selectedCarreraId != null) {
+            AlertDialog(
+                onDismissRequest = {
                     showDialog = false
                     selectedCarreraId = null
-                }) {
-                    Text("Editar")
-                }
-            },
-            dismissButton = {
-                Column {
+                },
+                title = { Text("Acciones sobre carrera") },
+                text = { Text("¿Qué querés hacer con esta carrera?") },
+                confirmButton = {
                     TextButton(onClick = {
-                        onDeleteCarrera(selectedCarreraId!!)
+                        navController.navigate("editar_carrera/${selectedCarreraId}")
                         showDialog = false
                         selectedCarreraId = null
                     }) {
-                        Text("Eliminar", color = MaterialTheme.colorScheme.error)
+                        Text("Editar")
                     }
-                    TextButton(onClick = {
-                        showDialog = false
-                        selectedCarreraId = null
-                    }) {
-                        Text("Cancelar")
-                    }
-                }
-            }
-        )
-    }
-
-    Column(
-        modifier = modifier
-            .padding(16.dp)
-            .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Spacer(modifier = Modifier.height(16.dp))
-
-        LazyColumn(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            items(carreras) { carrera ->
-                val resumen = resumenes[carrera.id]
-                val porcentaje = resumen?.porcentaje ?: 0
-                val fondoColor = colorPorPorcentaje(porcentaje)
-
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp)
-                        .combinedClickable(
-                            onClick = { onNavigate("detalle_carrera/${carrera.id}") },
-                            onLongClick = {
-                                selectedCarreraId = carrera.id
-                                showDialog = true
-                            }
-                        ),
-                    colors = CardDefaults.cardColors(containerColor = fondoColor),
-                    shape = RoundedCornerShape(16.dp),
-                    elevation = CardDefaults.cardElevation(6.dp)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                    ) {
-                        // Título
-                        Text(
-                            text = carrera.nombre,
-                            style = MaterialTheme.typography.titleLarge,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            maxLines = 1
-                        )
-
-                        Spacer(modifier = Modifier.height(4.dp))
-
-                        // Descripción
-                        Text(
-                            text = carrera.descripcion.ifBlank { "Sin descripción disponible" },
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        // Fila con cantidad de asignaturas y resumen (si hay)
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text = "Asignaturas: ${carrera.cantidadAsignaturas}",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-
-                            resumen?.let {
-                                Column(horizontalAlignment = Alignment.End) {
-                                    Text(
-                                        text = "Completado: ${it.porcentaje}%",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.secondary
-                                    )
-                                    Text(
-                                        text = "Promedio: ${"%.2f".format(it.promedio)}",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.secondary
-                                    )
-                                }
-                            }
+                },
+                dismissButton = {
+                    Column {
+                        TextButton(onClick = {
+                            viewModel.deleteCarreraMock(selectedCarreraId!!)
+                            showDialog = false
+                            selectedCarreraId = null
+                        }) {
+                            Text("Eliminar", color = MaterialTheme.colorScheme.error)
+                        }
+                        TextButton(onClick = {
+                            showDialog = false
+                            selectedCarreraId = null
+                        }) {
+                            Text("Cancelar")
                         }
                     }
                 }
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun CarreraCard(
+    carrera: Carrera,
+    resumen: CarreraResumen?,
+    onClick: () -> Unit,
+    onLongClick: () -> Unit
+) {
+    val porcentaje = resumen?.porcentaje ?: 0
+    val fondoColor = when (porcentaje) {
+        in 0..29 -> lerp(
+            MaterialTheme.colorScheme.surface,
+            MaterialTheme.colorScheme.onSurface,
+            0.1f
+        )
+        in 30..59 -> WarningYellow
+        in 60..98 -> ProgressOrange
+        else -> CompleteGreen
+    }
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .combinedClickable(onClick = onClick, onLongClick = onLongClick),
+        colors = CardDefaults.cardColors(containerColor = fondoColor),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Column(Modifier.padding(16.dp)) {
+            Text(carrera.nombre, style = MaterialTheme.typography.titleLarge)
+            Spacer(Modifier.height(4.dp))
+            Text(carrera.descripcion.ifBlank { "Sin descripción" }, style = MaterialTheme.typography.bodyMedium)
+
+            Spacer(Modifier.height(8.dp))
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                Text("Asignaturas: ${carrera.cantidadAsignaturas}")
+                resumen?.let {
+                    Column(horizontalAlignment = Alignment.End) {
+                        Text("Completado: ${it.porcentaje}%")
+                        Text("Promedio: ${"%.2f".format(it.promedio)}")
+                    }
+                }
             }
+        }
+    }
+}
+
+
+@Composable
+fun HomeScreenContent(
+    carreras: List<Carrera>,
+    resumenes: Map<String, CarreraResumen>,
+    onNavigate: (String) -> Unit,
+    onLongClickCarrera: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LazyColumn(
+        modifier = modifier
+            .padding(16.dp)
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        items(carreras) { carrera ->
+            CarreraCard(
+                carrera = carrera,
+                resumen = resumenes[carrera.id],
+                onClick = { onNavigate("detalle_carrera/${carrera.id}") },
+                onLongClick = { onLongClickCarrera(carrera.id) }
+            )
         }
     }
 }
@@ -321,17 +287,3 @@ fun colorPorPorcentaje(porcentaje: Int): Color {
 data class BottomNavItem(val route: String, val icon: ImageVector, val label: String)
 
 
-@Preview(showBackground = true)
-@Composable
-fun HomeScreenContentPreview() {
-    MaterialTheme {
-        HomeScreenContent(
-            greeting = "¡Hola, usuario!",
-            onNavigate = {},
-            carreras = emptyList(),
-            onDeleteCarrera = {},
-            onEditCarrera = {},
-            resumenes = TODO(),
-        )
-    }
-}
