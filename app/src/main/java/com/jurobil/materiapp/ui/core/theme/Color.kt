@@ -12,7 +12,7 @@ val Purple40 = Color(0xFF6650a4)
 val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
-val PrimaryColor = Color(0xFF4A90E2)
+val PrimaryColor = Color(0xFF00DFC2)
 val BackgroundColor = Color(0xFFF2F4F7)
 val CardColor = Color.White
 val TextColor = Color.Black

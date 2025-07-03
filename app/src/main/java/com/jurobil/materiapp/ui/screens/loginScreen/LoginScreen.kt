@@ -209,7 +209,7 @@ fun LoginScreen(
                             Icon(
                                 imageVector = Icons.Default.Email,
                                 contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
+                                tint = PrimaryColor.copy(alpha = 0.6f)
                             )
                         }
                     )
@@ -258,7 +258,8 @@ fun LoginScreen(
                         Text(
                             text = "Iniciar sesión",
                             style = MaterialTheme.typography.labelLarge,
-                            fontWeight = FontWeight.SemiBold
+                            color = Color.Black,
+                            fontWeight = FontWeight.Bold
                         )
 
                     }
@@ -402,7 +403,7 @@ fun PasswordTextField(
             Icon(
                 imageVector = Icons.Default.Lock,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
+                tint = PrimaryColor.copy(alpha = 0.6f)
             )
         },
         trailingIcon = {

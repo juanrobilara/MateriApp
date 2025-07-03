@@ -265,7 +265,7 @@ fun RegisterScreen(navController: NavHostController) {
                             text = if (isLoading) "Registrando..." else "Registrarse",
                             style = MaterialTheme.typography.labelLarge,
                             fontWeight = FontWeight.SemiBold,
-                            color = Color.White
+                            color = Color.Black
                         )
                     }
 
