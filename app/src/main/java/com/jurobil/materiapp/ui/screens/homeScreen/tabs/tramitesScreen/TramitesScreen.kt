@@ -17,14 +17,25 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Assignment
 import androidx.compose.material.icons.filled.AssignmentTurnedIn
+import androidx.compose.material.icons.filled.BookOnline
+import androidx.compose.material.icons.filled.CheckBox
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.DirectionsBus
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Event
+import androidx.compose.material.icons.filled.MenuBook
+import androidx.compose.material.icons.filled.Money
 import androidx.compose.material.icons.filled.MoreHoriz
+import androidx.compose.material.icons.filled.Quiz
+import androidx.compose.material.icons.filled.Report
+import androidx.compose.material.icons.filled.ReportProblem
+import androidx.compose.material.icons.filled.School
+import androidx.compose.material.icons.filled.SwapHoriz
+import androidx.compose.material.icons.filled.Verified
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -96,17 +107,19 @@ fun TramitesGrid(
     onTramiteClick: (OptionsMenu) -> Unit
 ) {
     val tramites = listOf(
-        TramiteItem("Constancia", Icons.Default.Description, OptionsMenu.CONSTANCIA_SCREEN),
-        TramiteItem("Inscripción", Icons.Default.Edit, OptionsMenu.INSCRIPCION_SCREEN),
-        TramiteItem("Verificación", Icons.Default.CheckCircle, OptionsMenu.VERIFICACION_SCREEN),
-        TramiteItem(
-            "Certificado",
-            Icons.Default.AssignmentTurnedIn,
-            OptionsMenu.CERTIFICADO_SCREEN
-        ),
-        TramiteItem("Analítico", Icons.Default.Download, OptionsMenu.ANALITICO_SCREEN),
-        TramiteItem("Boleto estudiantil", Icons.Default.DirectionsBus, OptionsMenu.BOLETO_SCREEN),
-        TramiteItem("Calendario", Icons.Default.Event, OptionsMenu.CALENDARIO_SCREEN),
+        TramiteItem("Calendario Académico", Icons.Default.Event, OptionsMenu.CALENDARIO_SCREEN),
+        TramiteItem("Inscripción a Materias", Icons.Default.Edit, OptionsMenu.INSCRIPCION_SCREEN),
+        TramiteItem("Inscripción a Finales", Icons.Default.BookOnline, OptionsMenu.INSCRIPCION_SCREEN),
+        TramiteItem("Solicitud de Analítico Parcial", Icons.Default.Assignment, OptionsMenu.ANALITICO_SCREEN),
+        TramiteItem("Verificación", Icons.Default.Verified, OptionsMenu.VERIFICACION_SCREEN),
+        TramiteItem("Reclamo de Notas de Examen", Icons.Default.ReportProblem, OptionsMenu.RECLAMO_SCREEN),
+        TramiteItem("Planes de Estudio y Carreras", Icons.Default.MenuBook, OptionsMenu.PLANES_SCREEN),
+        TramiteItem("Cambio y Simultaneidad", Icons.Default.SwapHoriz, OptionsMenu.CAMBIO_SCREEN),
+        TramiteItem("Constancia de Alumno Regular", Icons.Default.Description, OptionsMenu.CONSTANCIA_SCREEN),
+        TramiteItem("Boleto Estudiantil", Icons.Default.DirectionsBus, OptionsMenu.BOLETO_SCREEN),
+        TramiteItem("Solicitud de Becas", Icons.Default.Money, OptionsMenu.BOLETO_SCREEN),
+        TramiteItem("Certificado de Examen Libre", Icons.Default.Quiz, OptionsMenu.CERTIFICADO_SCREEN),
+        TramiteItem("Certificado de Finalización", Icons.Default.School, OptionsMenu.FINALIZACION_SCREEN),
         TramiteItem("Más acciones", Icons.Default.MoreHoriz, OptionsMenu.MAS_ACCIONES_SCREEN)
     )
 
@@ -151,13 +164,17 @@ fun TramiteContent(
         Spacer(modifier = Modifier.height(16.dp))
 
         when (option) {
-            OptionsMenu.CONSTANCIA_SCREEN -> {Text("Contenido de  Pantalla Constancia")}
+            OptionsMenu.CONSTANCIA_SCREEN -> Text("Contenido de Constancia")
             OptionsMenu.INSCRIPCION_SCREEN -> Text("Contenido de Inscripción")
             OptionsMenu.VERIFICACION_SCREEN -> Text("Contenido de Verificación")
-            OptionsMenu.CERTIFICADO_SCREEN -> Text("Contenido de Certificado")
-            OptionsMenu.ANALITICO_SCREEN -> Text("Contenido de Analítico")
+            OptionsMenu.CERTIFICADO_SCREEN -> Text("Contenido de Certificado de Examen Libre")
+            OptionsMenu.ANALITICO_SCREEN -> Text("Contenido de Analítico Parcial")
             OptionsMenu.BOLETO_SCREEN -> Text("Contenido de Boleto estudiantil")
-            OptionsMenu.CALENDARIO_SCREEN -> Text("Contenido de Calendario")
+            OptionsMenu.CALENDARIO_SCREEN -> Text("Contenido de Calendario Académico")
+            OptionsMenu.RECLAMO_SCREEN -> Text("Contenido de Reclamo de Notas")
+            OptionsMenu.PLANES_SCREEN -> Text("Contenido de Planes de Estudio")
+            OptionsMenu.CAMBIO_SCREEN -> Text("Contenido de Cambio y Simultaneidad de Carrera")
+            OptionsMenu.FINALIZACION_SCREEN -> Text("Contenido de Certificado de Finalización")
             OptionsMenu.MAS_ACCIONES_SCREEN -> Text("Contenido de Más acciones")
             else -> Text("Opción no reconocida.")
         }
@@ -175,7 +192,8 @@ fun TramiteButton(
             .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f))
             .clickable { onClick() }
             .padding(16.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .height(90.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(

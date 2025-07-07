@@ -28,6 +28,9 @@ fun AjustesNotificacionesScreen(navController: NavHostController) {
     val examenAlertas = remember { mutableStateOf(true) }
     val cursosAlertas = remember { mutableStateOf(false) }
     val recordatoriosAlertas = remember { mutableStateOf(true) }
+    val paroAlertas = remember { mutableStateOf(false) }
+    val eventosAlertas = remember { mutableStateOf(true) }
+    val fechasModificacionAlertas = remember { mutableStateOf(false) }
 
     MainScaffold(
         title = "Notificaciones",
@@ -50,6 +53,19 @@ fun AjustesNotificacionesScreen(navController: NavHostController) {
             NotificationSwitch(
                 title = "Alertas de Cursos Nuevos",
                 state = cursosAlertas
+            )
+
+            NotificationSwitch(
+                title = "Alertas de Paros/Suspensiones",
+                state = paroAlertas
+            )
+            NotificationSwitch(
+                title = "Alertas de Eventos",
+                state = eventosAlertas
+            )
+            NotificationSwitch(
+                title = "Modificación de Fechas",
+                state = fechasModificacionAlertas
             )
             NotificationSwitch(
                 title = "Recordatorios Generales",

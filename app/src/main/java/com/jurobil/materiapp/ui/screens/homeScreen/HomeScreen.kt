@@ -1,6 +1,7 @@
 package com.jurobil.materiapp.ui.screens.homeScreen
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -39,6 +40,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -59,6 +61,7 @@ import androidx.navigation.NavHostController
 import com.jurobil.materiapp.domain.model.Carrera
 import com.jurobil.materiapp.domain.model.CarreraResumen
 import com.jurobil.materiapp.ui.core.theme.CompleteGreen
+import com.jurobil.materiapp.ui.core.theme.PrimaryColor
 import com.jurobil.materiapp.ui.core.theme.ProgressOrange
 import com.jurobil.materiapp.ui.core.theme.WarningYellow
 import com.jurobil.materiapp.ui.screens.homeScreen.viewmodel.HomeViewModel
@@ -232,22 +235,37 @@ fun MainScaffold(
     )
 
     Scaffold(
+
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(title)
+                        Text(
+                            title,
+                            color = MaterialTheme.colorScheme.primary
+                        )
                         Spacer(Modifier.width(8.dp))
                     }
                 },
                 actions = {
                     IconButton(onClick = { onNavigate("profile") }) {
-                        Icon(Icons.Default.Person, contentDescription = "Perfil")
+                        Icon(
+                            Icons.Default.Person,
+                            contentDescription = "Perfil",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
                     }
                     IconButton(onClick = onSignOut) {
-                        Icon(Icons.Default.ExitToApp, contentDescription = "Cerrar sesión")
+                        Icon(
+                            Icons.Default.ExitToApp,
+                            contentDescription = "Cerrar sesión",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                )
             )
         },
         bottomBar = {
@@ -264,7 +282,7 @@ fun MainScaffold(
         },
         floatingActionButton = {
             if (showFab) {
-                FloatingActionButton(onClick = { onNavigate("seleccionar_fuente_de_carrera") }) {
+                FloatingActionButton(onClick = { onNavigate("seleccion_de_intraconsulta") }) {
                     Icon(Icons.Default.Add, contentDescription = "Agregar carrera")
                 }
             }

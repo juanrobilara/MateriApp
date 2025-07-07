@@ -76,7 +76,7 @@ fun AjustesAcercaScreen(navController: NavHostController) {
             )
 
             Text(
-                text = "grupoInterfaces@gmail.com",
+                text = "grupointerfaces@gmail.com",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface
             )

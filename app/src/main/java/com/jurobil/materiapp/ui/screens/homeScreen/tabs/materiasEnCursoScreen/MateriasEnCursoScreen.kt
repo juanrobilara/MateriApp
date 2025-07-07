@@ -55,11 +55,17 @@ fun MateriasEnCursoScreen(
 
     // Definición de colores dentro de un @Composable
     val warningYellow = WarningYellow
-    val completeGreen = CompleteGreen
     val tealPrimary = TealPrimary
 
+    val backgroundEnCurso = MaterialTheme.colorScheme.primaryContainer
+    val textEnCurso = MaterialTheme.colorScheme.primary
+    val backgroundFinalizadas = MaterialTheme.colorScheme.surface
+    val textFinalizadas = tealPrimary
+    val backgroundPendientes = MaterialTheme.colorScheme.surface
+    val textPendientes = warningYellow
+
     MainScaffold(
-        title = "Materias En curso",
+        title = "Materias en curso",
         currentRoute = "materias_curso",
         onSignOut = {
             navController.navigate("login") {
@@ -81,91 +87,56 @@ fun MateriasEnCursoScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            SectionMaterias(uiState.asignaturasEnCurso, "En curso", tealPrimary)
-            SectionMaterias(uiState.asignaturasFinalizadas, "Finalizadas", completeGreen)
-            SectionMaterias(uiState.asignaturasPendientes, "Pendientes", warningYellow)
+            SectionMaterias(uiState.asignaturasEnCurso, "En curso", backgroundEnCurso, textEnCurso)
+            SectionMaterias(uiState.asignaturasFinalizadas, "Finalizadas", backgroundFinalizadas, textFinalizadas)
+            SectionMaterias(uiState.asignaturasPendientes, "Pendientes", backgroundPendientes, textPendientes)
         }
     }
 }
 
-private fun LazyListScope.SectionMaterias(lista: List<AsignaturaNew>, titulo: String, color: Color) {
+private fun LazyListScope.SectionMaterias(
+    lista: List<AsignaturaNew>,
+    titulo: String,
+    backgroundColor: Color,
+    textColor: Color
+) {
     if (lista.isNotEmpty()) {
-        item { Text(titulo, style = MaterialTheme.typography.titleMedium, color = color) }
-        items(lista) { AsignaturaCard(it, color) }
+        item {
+            Text(
+                text = titulo,
+                style = MaterialTheme.typography.titleMedium,
+                color = Color.White // Título siempre en blanco
+            )
+        }
+        items(lista) {
+            AsignaturaCard(it, backgroundColor, textColor)
+        }
     }
 }
 
 @Composable
-fun AsignaturaCard(asignatura: AsignaturaNew, color: Color) {
+fun AsignaturaCard(asignatura: AsignaturaNew, backgroundColor: Color, textColor: Color) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(1.dp, color),
+        colors = CardDefaults.cardColors(containerColor = backgroundColor),
+        border = BorderStroke(1.dp, textColor),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(Modifier.padding(16.dp)) {
-            Text(asignatura.nombre, style = MaterialTheme.typography.titleMedium)
+            Text(asignatura.nombre, style = MaterialTheme.typography.titleMedium, color = textColor)
             Spacer(Modifier.height(8.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text("Inicio: ${asignatura.fechaInicio}")
                 Text("Fin: ${asignatura.fechaFin}")
             }
             Spacer(Modifier.height(4.dp))
-            Text(asignatura.estado.name, color = color)
+            Text(asignatura.estado.name, color = textColor)
             if (asignatura.observaciones.isNotEmpty()) {
                 Spacer(Modifier.height(8.dp))
-                Text("Observaciones: No presenta", style = MaterialTheme.typography.bodySmall)
+                Text("Observaciones: ${asignatura.observaciones}", style = MaterialTheme.typography.bodySmall)
             }
         }
     }
 }
-
-@Composable
-fun AsignaturaSection(lista: List<AsignaturaNew>, titulo: String, color: Color) {
-    if (lista.isNotEmpty()) {
-        Text(titulo, style = MaterialTheme.typography.titleMedium, color = color)
-        Spacer(Modifier.height(8.dp))
-        lista.forEach { asignatura ->
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-                shape = RoundedCornerShape(16.dp),
-                elevation = CardDefaults.cardElevation(4.dp)
-            ) {
-                Column(Modifier.padding(16.dp)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Box(Modifier.size(8.dp).background(color, CircleShape))
-                        Spacer(Modifier.width(8.dp))
-                        Text(asignatura.nombre, style = MaterialTheme.typography.titleMedium)
-                    }
-                    Spacer(Modifier.height(4.dp))
-                    Text("Inicio: ${asignatura.fechaInicio}  |  Fin: ${asignatura.fechaFin}", style = MaterialTheme.typography.bodySmall)
-                    if (asignatura.observaciones.isNotEmpty()) {
-                        Spacer(Modifier.height(4.dp))
-                        Text("Observaciones: ${asignatura.observaciones}", style = MaterialTheme.typography.bodySmall)
-                    }
-                }
-            }
-        }
-    }
-}
-
-private fun LazyListScope.section(
-    lista: List<AsignaturaNew>,
-    titulo: String,
-    color: Color
-) {
-    if (lista.isNotEmpty()) {
-        item {
-            Text(titulo, style = MaterialTheme.typography.titleMedium)
-        }
-        items(lista) {
-            AsignaturaCard(it, color)
-        }
-    }
-}
-
-
-
 

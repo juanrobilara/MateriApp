@@ -38,6 +38,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -143,12 +144,19 @@ fun TutoresScreen(
 
 @Composable
 fun TutorCard(tutor: Tutor, onClick: () -> Unit) {
+
+    val fondoColor = lerp(
+        MaterialTheme.colorScheme.surface,
+        MaterialTheme.colorScheme.onSurface,
+        0.1f
+    )
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() },
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        colors = CardDefaults.cardColors(containerColor = fondoColor),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
         Row(modifier = Modifier.padding(16.dp)) {
