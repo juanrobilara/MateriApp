@@ -11,10 +11,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -53,16 +56,7 @@ fun DetalleAsignaturaScreen(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val currentAsignatura by viewModel.currentAsignatura.collectAsState()
-    var asignatura by remember { mutableStateOf(currentAsignatura) }
-    var nombre by remember { mutableStateOf("") }
-    var nota by remember { mutableStateOf("") }
-    var observaciones by remember { mutableStateOf("") }
-    var isSaving by remember { mutableStateOf(false) }
 
-
-    Log.i("Klyxdev", "setAginaturaFake: $currentAsignatura")
-
-    // Cargar datos de la asignatura
     LaunchedEffect(asignaturaId) {
         viewModel.getAsignaturasFake(asignaturaId)
     }
@@ -72,10 +66,12 @@ fun DetalleAsignaturaScreen(
             CircularProgressIndicator()
         }
     } else {
+        val asignatura = currentAsignatura!!
+
         Scaffold(
             topBar = {
                 CenterAlignedTopAppBar(
-                    title = { Text("Editar Asignatura") },
+                    title = { Text("Detalle de Asignatura") },
                     navigationIcon = {
                         IconButton(onClick = { navHostController.popBackStack() }) {
                             Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
@@ -94,85 +90,53 @@ fun DetalleAsignaturaScreen(
             ) {
 
                 Text(
-                    text = "Detalles actuales:",
+                    text = "Detalles de la Asignatura:",
                     style = MaterialTheme.typography.titleMedium
                 )
-                Text(
-                    text = "Nombre: ${currentAsignatura!!.nombre}",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-
-                Spacer(Modifier.height(8.dp))
 
                 OutlinedTextField(
-                    value = nombre,
-                    onValueChange = { nombre = it },
-                    label = { Text("Nombre de la Asignatura") },
-                    modifier = Modifier.fillMaxWidth()
+                    value = asignatura.nombre,
+                    onValueChange = {},
+                    label = { Text("Nombre") },
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = false
                 )
 
                 OutlinedTextField(
-                    value = nota,
-                    onValueChange = { nota = it },
+                    value = asignatura.nota?.toString() ?: "Sin nota",
+                    onValueChange = {},
                     label = { Text("Nota") },
-                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = false
                 )
 
-                OutlinedTextField(
-                    value = observaciones,
-                    onValueChange = { observaciones = it },
-                    label = { Text("Observaciones") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(100.dp)
-                )
+                Button(
+                    onClick = { /* TODO: Lógica para solicitar reclamo */ },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Solicitar reclamo de nota")
+                }
 
                 Spacer(Modifier.height(16.dp))
 
-                Button(
-                    onClick = {
-                        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return@Button
-                        val notaDouble = nota.toDoubleOrNull()
-                        isSaving = true
+                Text(
+                    text = "Observaciones:",
+                    style = MaterialTheme.typography.titleMedium
+                )
 
-                        FirebaseFirestore.getInstance()
-                            .collection("users")
-                            .document(uid)
-                            .collection("carreras")
-                            .document(carreraId)
-                            .collection("asignaturas")
-                            .document(asignaturaId)
-                            .update(
-                                mapOf(
-                                    "nombre" to nombre,
-                                    "nota" to notaDouble,
-                                    "observaciones" to observaciones
-                                )
-                            )
-                            .addOnSuccessListener {
-                                isSaving = false
-                                navHostController.popBackStack()
-                            }
-                            .addOnFailureListener {
-                                isSaving = false
-                            }
-                    },
-                    enabled = !isSaving,
+                Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(50.dp)
+                        .padding(top = 8.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                    elevation = CardDefaults.cardElevation(2.dp)
                 ) {
-                    if (isSaving) {
-                        CircularProgressIndicator(
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            modifier = Modifier.size(20.dp),
-                            strokeWidth = 2.dp
-                        )
-                    } else {
-                        Text("Guardar cambios")
-                    }
+                    Text(
+                        text = if (asignatura.observaciones.isNotEmpty()) asignatura.observaciones else "Sin observaciones.",
+                        modifier = Modifier.padding(16.dp),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
                 }
             }
         }

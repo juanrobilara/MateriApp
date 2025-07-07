@@ -41,6 +41,43 @@ class FakeRepository @Inject constructor() {
             nombre = "Turismo",
             descripcion = "Gestión de servicios turísticos, hotelería y planificación de viajes.",
             cantidadAsignaturas = 6
+        ),
+
+        Carrera(
+            id = "16",
+            nombre = "Ingeniería en Telecomunicaciones",
+            descripcion = "Diseño, implementación y gestión de sistemas de comunicación y redes.",
+            cantidadAsignaturas = 10
+        ),
+        Carrera(
+            id = "17",
+            nombre = "Psicología Clínica",
+            descripcion = "Formación para el diagnóstico y tratamiento de trastornos mentales y emocionales.",
+            cantidadAsignaturas = 9
+        ),
+        Carrera(
+            id = "18",
+            nombre = "Ciencias de la Computación",
+            descripcion = "Estudios avanzados en algoritmos, programación y teoría computacional.",
+            cantidadAsignaturas = 12
+        ),
+        Carrera(
+            id = "19",
+            nombre = "Ingeniería Civil",
+            descripcion = "Diseño, construcción y mantenimiento de infraestructuras y obras públicas.",
+            cantidadAsignaturas = 11
+        ),
+        Carrera(
+            id = "20",
+            nombre = "Marketing Digital",
+            descripcion = "Estrategias de promoción y publicidad en medios digitales y redes sociales.",
+            cantidadAsignaturas = 7
+        ),
+        Carrera(
+            id = "21",
+            nombre = "Medicina Veterinaria",
+            descripcion = "Atención médica y sanitaria para animales domésticos y de producción.",
+            cantidadAsignaturas = 10
         )
     )
 
