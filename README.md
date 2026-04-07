@@ -2,16 +2,13 @@
 
 Versión universitaria de **MateriApp**, un proyecto concebido y desarrollado para la materia **"Desarrollo de Interfaces"**. El foco principal fue aplicar principios de UI/UX para lograr una aplicación funcional, estética y, sobre todo, fácil de usar.
 El principal objetivo fue el de unificar las dos plataformas que utilizamos en la UNLaM (MIeL e Intraconsulta), con el fin de simplificar la gestión académica.
----
 
 > ## Resultado: Calificación 10
->
+
 > Este proyecto fue evaluado con un diez por parte de la cátedra. El reconocimiento se centró específicamente en la calidad de la interfaz y la experiencia de usuario, destacando:
 >
 > - **La intuitividad del flujo de navegación.**
 > - **La claridad y disposición lógica de las pantallas.**
-
----
 
 ### Principios de Diseño Aplicados
 
